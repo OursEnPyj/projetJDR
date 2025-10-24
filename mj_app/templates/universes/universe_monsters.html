@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Monstres — {{ universe.name }}{% endblock %}
+
+{% block content %}
+<h2>Monstres pour {{ universe.name }}</h2>
+
+<p class="text-muted">Page placeholder — à relier au modèle Monster et au générateur de monstres spécifique à l'univers.</p>
+
+<p>
+  <a class="btn btn-outline-primary" href="{% url 'monsters:monster_list' %}?universe={{ universe.pk }}">Voir la liste des monstres filtrée par univers</a>
+  <a class="btn btn-outline-secondary" href="#">Générateur de monstre (placeholder)</a>
+</p>
+
+<hr>
+<h5>Futurs outils</h5>
+<ul>
+  <li>Éditeur d'écosystèmes</li>
+  <li>Bestiaire avancé</li>
+  <li>Import/export de monstres</li>
+</ul>
+{% endblock %}

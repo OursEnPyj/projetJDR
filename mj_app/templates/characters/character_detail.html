@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ character.name }}</h2>
+<p><strong>Race :</strong> {{ character.race }}</p>
+<p><strong>Classe :</strong> {{ character.class_type }}</p>
+
+<h3>Caractéristiques</h3>
+<ul>
+  <li>Force : {{ character.strength }}</li>
+  <li>Dextérité : {{ character.dexterity }}</li>
+  <li>Constitution : {{ character.constitution }}</li>
+  <li>Intelligence : {{ character.intelligence }}</li>
+  <li>Sagesse : {{ character.wisdom }}</li>
+  <li>Charisme : {{ character.charisma }}</li>
+</ul>
+
+<h3>Description</h3>
+<p>{{ character.description|linebreaks }}</p>
+
+<h3>Histoire</h3>
+<p>{{ character.backstory|linebreaks }}</p>
+
+<a href="{% url 'character_update' character.pk %}">Modifier</a> |
+<a href="{% url 'character_list' %}">Retour à la liste</a>
+{% endblock %}

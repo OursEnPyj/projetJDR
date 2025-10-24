@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Création / édition de personnage</h2>
+
+
+<form method="POST">
+{% csrf_token %}
+<div class="form-section">
+<label for="id_name">Nom :</label>
+{{ form.name }}
+</div>
+
+
+<div class="form-section">
+<label for="id_race">Race :</label>
+{{ form.race }}
+</div>
+
+
+<div class="form-section">
+<label for="id_class_type">Classe :</label>
+{{ form.class_type }}
+</div>
+
+
+<div class="form-section">
+<label for="id_strength">Force :</label>
+{{ form.strength }}
+</div>
+<div class="form-section">
+<label for="id_dexterity">Dextérité :</label>
+{{ form.dexterity }}
+</div>
+<div class="form-section">
+<label for="id_constitution">Constitution :</label>
+{{ form.constitution }}
+</div>
+<div class="form-section">
+<label for="id_intelligence">Intelligence :</label>
+{{ form.intelligence }}
+</div>
+<div class="form-section">
+<label for="id_wisdom">Sagesse :</label>
+{{ form.wisdom }}
+</div>
+<div class="form-section">
+<label for="id_charisma">Charisme :</label>
+{{ form.charisma }}
+</div>
+
+
+<div class="form-section">
+<label for="id_description">Description physique :</label>
+{{ form.description }}
+</div>
+
+
+<div class="form-section">
+<label for="id_backstory">Histoire :</label>
+{{ form.backstory }}
+</div>
+
+
+<button type="submit">Enregistrer le personnage</button>
+</form>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}{{ universe.name }} — Outils{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h1 class="card-title">{{ universe.name }}</h1>
+    {% if universe.system %}<h5 class="card-subtitle mb-2 text-muted">{{ universe.system }}</h5>{% endif %}
+    <p class="card-text">{{ universe.description|linebreaksbr }}</p>
+
+    <hr>
+    <h4>Outils pour cet univers</h4>
+    <div class="d-flex flex-wrap gap-2 mb-3">
+      <a class="btn btn-primary" href="{% url 'universes:generate_character' universe.pk %}">Générateur de personnages</a>
+      <a class="btn btn-secondary" href="{% url 'universes:universe_monsters' universe.pk %}">Monstres (liste & générateur)</a>
+      <a class="btn btn-outline-info" href="#">Exporter l'univers (placeholder)</a>
+      <a class="btn btn-outline-warning" href="#">Carnet de campagne (placeholder)</a>
+    </div>
+
+    <h5>Règles de création (JSON)</h5>
+    {% if universe.creation_rules %}
+      <pre class="bg-light p-2 border">{{ universe.creation_rules|json_script:"creation_rules" }}</pre>
+      <p class="text-muted">Modifiez ces règles depuis l'admin pour adapter le générateur.</p>
+    {% else %}
+      <div class="alert alert-secondary">Aucune règle définie pour cet univers. Utilisez l'admin pour ajouter des <code>creation_rules</code> (JSON).</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

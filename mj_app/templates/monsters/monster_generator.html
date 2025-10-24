@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Générateur de monstre</h2>
+<form method="POST">{% csrf_token %}
+<button type="submit">Générer un monstre aléatoire</button>
+</form>
+{% if monster %}
+<div class="monster">
+<h3>{{ monster.name }}</h3>
+<p>Type: {{ monster.type }}</p>
+<p>PV: {{ monster.hit_points }}</p>
+<p>Classe d'armure: {{ monster.armor_class }}</p>
+<p>For: {{ monster.strength }} Dex: {{ monster.dexterity }} Con: {{ monster.constitution }}</p>
+<p>Int: {{ monster.intelligence }} Sag: {{ monster.wisdom }} Cha: {{ monster.charisma }}</p>
+<p>{{ monster.description }}</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Générer un personnage — {{ universe.name }}{% endblock %}
+
+{% block content %}
+<h2>Générateur de personnage — {{ universe.name }}</h2>
+
+<p class="text-muted">Règles connues pour cet univers : {{ rules|default:"Aucune règle définie" }}</p>
+
+<form method="post" class="mb-4">
+  {% csrf_token %}
+  <div class="mb-2">
+    <label for="name" class="form-label">Nom (optionnel)</label>
+    <input class="form-control" name="name" id="name" placeholder="Nom du personnage">
+  </div>
+  <button class="btn btn-success" type="submit">Générer</button>
+  <a class="btn btn-link" href="{% url 'universes:universe_detail' universe.pk %}">Retour</a>
+</form>
+
+{% if generated %}
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{ generated.name }}</h5>
+      <p class="card-text">
+        <strong>Classe :</strong> {{ generated.class }}<br>
+        <strong>Race :</strong> {{ generated.race }}<br>
+        <strong>Niveau :</strong> {{ generated.level }}<br>
+        <strong>Univers :</strong> {{ generated.universe }}
+      </p>
+    </div>
+  </div>
+{% else %}
+  <div class="alert alert-secondary">Soumettez le formulaire pour générer un personnage.</div>
+{% endif %}
+{% endblock %}

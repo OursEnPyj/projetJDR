@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Liste des personnages</h2>
+<a href="{% url 'character_create' %}">+ Créer un nouveau personnage</a>
+<ul>
+  {% for character in characters %}
+  <li>
+    <a href="{% url 'character_detail' character.pk %}">
+      <strong>{{ character.name }}</strong> — {{ character.race }} ({{ character.class_type }})
+    </a>
+    <a href="{% url 'character_update' character.pk %}">✏️</a>
+    <a href="{% url 'character_delete' character.pk %}">🗑️</a>
+  </li>
+  {% empty %}
+  <li>Aucun personnage pour le moment.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Liste des monstres</h2>
+<ul>
+{% for monster in monsters %}
+<li><strong>{{ monster.name }}</strong> — {{ monster.type }} (PV: {{ monster.hit_points }})</li>
+{% empty %}
+<li>Aucun monstre trouvé.</li>
+{% endfor %}
+</ul>
+<a href="{% url 'monster_generator' %}">Générer un monstre</a>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Supprimer le personnage</h2>
+<p>Es-tu sûr de vouloir supprimer <strong>{{ character.name }}</strong> ?</p>
+
+<form method="POST">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+  <a href="{% url 'character_list' %}">Annuler</a>
+</form>
+{% endblock %}

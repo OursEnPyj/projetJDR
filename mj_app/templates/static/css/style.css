@@ -1,0 +1,28 @@
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+.navbar-brand {
+  letter-spacing: 1px;
+}
+
+.container {
+  max-width: 900px;
+}
+
+h2, h3 {
+  margin-top: 1.5rem;
+}
+
+.form-section {
+  margin-bottom: 1rem;
+}
+
+button, .btn {
+  border-radius: 0.4rem;
+}
+
+footer {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Liste des univers — MJ App{% endblock %}
+
+{% block content %}
+<h1>Univers</h1>
+
+<div class="row">
+  {% for universe in universes %}
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ universe.name }}</h5>
+          {% if universe.system %}<h6 class="card-subtitle mb-2 text-muted">{{ universe.system }}</h6>{% endif %}
+          <p class="card-text">{{ universe.description|truncatechars:180 }}</p>
+
+          <div class="d-flex gap-2">
+            <a class="btn btn-outline-primary btn-sm" href="{% url 'universes:universe_detail' universe.pk %}">Détails & outils</a>
+            <a class="btn btn-primary btn-sm" href="{% url 'universes:generate_character' universe.pk %}">Générateur de personnages</a>
+            <a class="btn btn-secondary btn-sm" href="{% url 'universes:universe_monsters' universe.pk %}">Monstres</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12">
+      <div class="alert alert-info">Aucun univers n'a été créé.</div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
