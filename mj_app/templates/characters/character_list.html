@@ -1,18 +1,30 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Liste des personnages</h2>
-<a href="{% url 'character_create' %}">+ Créer un nouveau personnage</a>
-<ul>
+<a href="{% url 'characters:character_create' %}" class="btn btn-success mb-3">+ Créer un nouveau personnage</a>
+<div class="row">
   {% for character in characters %}
-  <li>
-    <a href="{% url 'character_detail' character.pk %}">
-      <strong>{{ character.name }}</strong> — {{ character.race }} ({{ character.class_type }})
-    </a>
-    <a href="{% url 'character_update' character.pk %}">✏️</a>
-    <a href="{% url 'character_delete' character.pk %}">🗑️</a>
-  </li>
+  <div class="col-md-6 col-lg-4 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{ character.name }}</h5>
+        <p class="card-text">
+          <strong>Race:</strong> {{ character.race }}<br>
+          <strong>Classe:</strong> {{ character.char_class }}<br>
+          <strong>Univers:</strong> {{ character.universe.name }}
+        </p>
+        <div class="btn-group" role="group">
+          <a href="{% url 'characters:character_detail' character.pk %}" class="btn btn-primary btn-sm">Voir</a>
+          <a href="{% url 'characters:character_update' character.pk %}" class="btn btn-warning btn-sm">Modifier</a>
+          <a href="{% url 'characters:character_delete' character.pk %}" class="btn btn-danger btn-sm">Supprimer</a>
+        </div>
+      </div>
+    </div>
+  </div>
   {% empty %}
-  <li>Aucun personnage pour le moment.</li>
+  <div class="col-12">
+    <div class="alert alert-info">Aucun personnage pour le moment.</div>
+  </div>
   {% endfor %}
-</ul>
+</div>
 {% endblock %}

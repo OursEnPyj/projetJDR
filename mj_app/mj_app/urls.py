@@ -21,6 +21,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # expose les patterns définis dans chaque app avec un namespace explicite
     path("", include(("universes.urls", "universes"), namespace="universes")),
-    path("", include(("characters.urls", "characters"), namespace="characters")),
-    path("", include(("monsters.urls", "monsters"), namespace="monsters")),
+    path("characters/", include(("characters.urls", "characters"), namespace="characters")),
+    path("monsters/", include(("monsters.urls", "monsters"), namespace="monsters")),
 ]

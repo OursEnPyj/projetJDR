@@ -21,11 +21,16 @@ def character_create(request):
     if request.method == 'POST':
         form = CharacterForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('character_list')
+            character = form.save(commit=False)
+            # Si pas d'univers spécifié, prendre le premier disponible
+            if not character.universe:
+                from universes.models import Universe
+                character.universe = Universe.objects.first()
+            character.save()
+            return redirect('characters:character_list')
     else:
         form = CharacterForm()
-    return render(request, 'characters/character_form.html', {'form': form})
+    return render(request, 'characters/characters_form.html', {'form': form})
 
 
 def character_update(request, pk):
@@ -35,10 +40,10 @@ def character_update(request, pk):
         form = CharacterForm(request.POST, instance=character)
         if form.is_valid():
             form.save()
-            return redirect('character_detail', pk=character.pk)
+            return redirect('characters:character_detail', pk=character.pk)
     else:
         form = CharacterForm(instance=character)
-    return render(request, 'characters/character_form.html', {'form': form, 'character': character})
+    return render(request, 'characters/characters_form.html', {'form': form, 'character': character})
 
 
 def character_delete(request, pk):
@@ -46,5 +51,5 @@ def character_delete(request, pk):
     character = get_object_or_404(Character, pk=pk)
     if request.method == 'POST':
         character.delete()
-        return redirect('character_list')
+        return redirect('characters:character_list')
     return render(request, 'characters/character_confirm_delete.html', {'character': character})

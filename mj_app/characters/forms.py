@@ -8,6 +8,7 @@ class CharacterForm(forms.ModelForm):
         fields = [
             "name",
             "race",
+            "char_class",
             "strength",
             "dexterity",
             "constitution",

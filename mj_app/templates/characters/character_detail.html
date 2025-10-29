@@ -1,25 +1,47 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>{{ character.name }}</h2>
-<p><strong>Race :</strong> {{ character.race }}</p>
-<p><strong>Classe :</strong> {{ character.class_type }}</p>
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+      <h2>{{ character.name }}</h2>
+      <p><strong>Race :</strong> {{ character.race }}</p>
+      <p><strong>Classe :</strong> {{ character.char_class }}</p>
+      <p><strong>Univers :</strong> {{ character.universe.name }}</p>
 
-<h3>Caractéristiques</h3>
-<ul>
-  <li>Force : {{ character.strength }}</li>
-  <li>Dextérité : {{ character.dexterity }}</li>
-  <li>Constitution : {{ character.constitution }}</li>
-  <li>Intelligence : {{ character.intelligence }}</li>
-  <li>Sagesse : {{ character.wisdom }}</li>
-  <li>Charisme : {{ character.charisma }}</li>
-</ul>
+      <h3>Caractéristiques</h3>
+      <div class="row">
+        <div class="col-md-6">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">Force : <strong>{{ character.strength }}</strong></li>
+            <li class="list-group-item">Dextérité : <strong>{{ character.dexterity }}</strong></li>
+            <li class="list-group-item">Constitution : <strong>{{ character.constitution }}</strong></li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">Intelligence : <strong>{{ character.intelligence }}</strong></li>
+            <li class="list-group-item">Sagesse : <strong>{{ character.wisdom }}</strong></li>
+            <li class="list-group-item">Charisme : <strong>{{ character.charisma }}</strong></li>
+          </ul>
+        </div>
+      </div>
 
-<h3>Description</h3>
-<p>{{ character.description|linebreaks }}</p>
+      {% if character.description %}
+      <h3 class="mt-4">Description</h3>
+      <p>{{ character.description|linebreaks }}</p>
+      {% endif %}
 
-<h3>Histoire</h3>
-<p>{{ character.backstory|linebreaks }}</p>
+      {% if character.background %}
+      <h3 class="mt-4">Histoire</h3>
+      <p>{{ character.background|linebreaks }}</p>
+      {% endif %}
 
-<a href="{% url 'character_update' character.pk %}">Modifier</a> |
-<a href="{% url 'character_list' %}">Retour à la liste</a>
+      <div class="mt-4">
+        <a href="{% url 'characters:character_update' character.pk %}" class="btn btn-warning">Modifier</a>
+        <a href="{% url 'characters:character_list' %}" class="btn btn-secondary">Retour à la liste</a>
+        <a href="{% url 'characters:character_delete' character.pk %}" class="btn btn-danger">Supprimer</a>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

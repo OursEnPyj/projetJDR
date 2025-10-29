@@ -1,66 +1,74 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Création / édition de personnage</h2>
+<div class="container">
+  <h2>{% if character %}Modifier{% else %}Créer{% endif %} un personnage</h2>
 
+  <form method="POST" class="row g-3">
+    {% csrf_token %}
+    
+    <div class="col-md-6">
+      <label for="id_name" class="form-label">Nom :</label>
+      {{ form.name.as_widget:{"class": "form-control"} }}
+    </div>
 
-<form method="POST">
-{% csrf_token %}
-<div class="form-section">
-<label for="id_name">Nom :</label>
-{{ form.name }}
+    <div class="col-md-6">
+      <label for="id_race" class="form-label">Race :</label>
+      {{ form.race.as_widget:{"class": "form-control"} }}
+    </div>
+
+    <div class="col-md-6">
+      <label for="id_char_class" class="form-label">Classe :</label>
+      {{ form.char_class.as_widget:{"class": "form-control"} }}
+    </div>
+
+    <div class="col-12">
+      <h4>Caractéristiques</h4>
+    </div>
+
+    <div class="col-md-4">
+      <label for="id_strength" class="form-label">Force :</label>
+      {{ form.strength.as_widget:{"class": "form-control"} }}
+    </div>
+    
+    <div class="col-md-4">
+      <label for="id_dexterity" class="form-label">Dextérité :</label>
+      {{ form.dexterity.as_widget:{"class": "form-control"} }}
+    </div>
+    
+    <div class="col-md-4">
+      <label for="id_constitution" class="form-label">Constitution :</label>
+      {{ form.constitution.as_widget:{"class": "form-control"} }}
+    </div>
+    
+    <div class="col-md-4">
+      <label for="id_intelligence" class="form-label">Intelligence :</label>
+      {{ form.intelligence.as_widget:{"class": "form-control"} }}
+    </div>
+    
+    <div class="col-md-4">
+      <label for="id_wisdom" class="form-label">Sagesse :</label>
+      {{ form.wisdom.as_widget:{"class": "form-control"} }}
+    </div>
+    
+    <div class="col-md-4">
+      <label for="id_charisma" class="form-label">Charisme :</label>
+      {{ form.charisma.as_widget:{"class": "form-control"} }}
+    </div>
+
+    <div class="col-12">
+      <label for="id_description" class="form-label">Description :</label>
+      {{ form.description.as_widget:{"class": "form-control"} }}
+    </div>
+
+    <div class="col-12">
+      <label for="id_background" class="form-label">Histoire :</label>
+      {{ form.background.as_widget:{"class": "form-control"} }}
+    </div>
+
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary">Enregistrer le personnage</button>
+      <a href="{% url 'characters:character_list' %}" class="btn btn-secondary">Annuler</a>
+    </div>
+  </form>
 </div>
-
-
-<div class="form-section">
-<label for="id_race">Race :</label>
-{{ form.race }}
-</div>
-
-
-<div class="form-section">
-<label for="id_class_type">Classe :</label>
-{{ form.class_type }}
-</div>
-
-
-<div class="form-section">
-<label for="id_strength">Force :</label>
-{{ form.strength }}
-</div>
-<div class="form-section">
-<label for="id_dexterity">Dextérité :</label>
-{{ form.dexterity }}
-</div>
-<div class="form-section">
-<label for="id_constitution">Constitution :</label>
-{{ form.constitution }}
-</div>
-<div class="form-section">
-<label for="id_intelligence">Intelligence :</label>
-{{ form.intelligence }}
-</div>
-<div class="form-section">
-<label for="id_wisdom">Sagesse :</label>
-{{ form.wisdom }}
-</div>
-<div class="form-section">
-<label for="id_charisma">Charisme :</label>
-{{ form.charisma }}
-</div>
-
-
-<div class="form-section">
-<label for="id_description">Description physique :</label>
-{{ form.description }}
-</div>
-
-
-<div class="form-section">
-<label for="id_backstory">Histoire :</label>
-{{ form.backstory }}
-</div>
-
-
-<button type="submit">Enregistrer le personnage</button>
-</form>
 {% endblock %}
