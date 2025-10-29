@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from debug_views import test_universe_debug
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -23,4 +24,6 @@ urlpatterns = [
     path("", include(("universes.urls", "universes"), namespace="universes")),
     path("characters/", include(("characters.urls", "characters"), namespace="characters")),
     path("monsters/", include(("monsters.urls", "monsters"), namespace="monsters")),
+    # Vue de debug temporaire
+    path("debug/<int:universe_id>/", test_universe_debug, name="debug_universe"),
 ]

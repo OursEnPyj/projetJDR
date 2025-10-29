@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h2>{{ method_name }} — {{ universe.name }}</h2>
+  
+  <div class="alert alert-info">
+    <h4>🎲 Génération Aléatoire D&D 5e</h4>
+    <p>Cette méthode génère complètement au hasard :</p>
+    <ul>
+      <li>Race parmi celles disponibles en D&D 5e</li>
+      <li>Classe parmi celles disponibles en D&D 5e</li>
+      <li>Caractéristiques (lancers de dés 4d6, garder les 3 meilleurs)</li>
+      <li>Traits de personnalité, idéaux, liens et défauts</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">🚧 Fonctionnalité en développement</h5>
+      <p class="card-text">
+        Cette méthode de génération sera bientôt disponible ! Elle permettra de créer rapidement 
+        des personnages entièrement aléatoires mais cohérents pour D&D 5e.
+      </p>
+      
+      <div class="placeholder-content bg-light p-4 rounded">
+        <h6>Aperçu de la future interface :</h6>
+        <ul>
+          <li>Bouton "Générer un personnage aléatoire"</li>
+          <li>Affichage du personnage généré avec toutes ses caractéristiques</li>
+          <li>Possibilité de regénérer certains aspects</li>
+          <li>Bouton "Sauvegarder ce personnage"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <a href="{% url 'characters:choose_generation_method' universe.pk %}" class="btn btn-secondary">
+      ← Retour aux méthodes
+    </a>
+    <a href="{% url 'universes:generate_character' universe.pk %}" class="btn btn-primary">
+      Utiliser la génération actuelle (temporaire)
+    </a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h2>Choisir un univers pour la génération</h2>
+  <p class="text-muted">Sélectionnez l'univers dans lequel vous souhaitez générer un personnage :</p>
+  
+  {% if universes %}
+    <div class="row">
+      {% for universe in universes %}
+        <div class="col-md-6 col-lg-4 mb-3">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{ universe.name }}</h5>
+              <p class="card-text">
+                <strong>Système :</strong> {{ universe.system }}<br>
+                {% if universe.description %}
+                  {{ universe.description|truncatewords:15 }}
+                {% endif %}
+              </p>
+              <a href="{% url 'characters:choose_generation_method' universe.pk %}" class="btn btn-primary">
+                🎲 Générer dans cet univers
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-warning">
+      <h4>Aucun univers disponible</h4>
+      <p>Vous devez d'abord créer un univers avant de pouvoir générer des personnages.</p>
+      <a href="{% url 'universes:universe_list' %}" class="btn btn-primary">Aller aux univers</a>
+    </div>
+  {% endif %}
+  
+  <div class="mt-4">
+    <a href="{% url 'characters:character_list' %}" class="btn btn-secondary">Retour à la liste des personnages</a>
+  </div>
+</div>
+{% endblock %}

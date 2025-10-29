@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h2>{{ method_name }} — {{ universe.name }}</h2>
+  
+  <div class="alert alert-info">
+    <h4>⚖️ Génération Équilibrée D&D 5e</h4>
+    <p>Cette méthode intelligente assure la cohérence :</p>
+    <ul>
+      <li>Sélection aléatoire d'une <strong>race</strong> D&D 5e</li>
+      <li>Sélection aléatoire d'une <strong>classe</strong> compatible</li>
+      <li>Attribution des caractéristiques <strong>optimisées</strong> pour cette combinaison</li>
+      <li>Application des <strong>modificateurs raciaux</strong> appropriés</li>
+      <li>Personnage viable et efficace dès la création</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">🚧 Algorithme en développement</h5>
+      <p class="card-text">
+        L'algorithme de génération équilibrée sera bientôt disponible ! Il créera des personnages 
+        cohérents en analysant les synergies race/classe.
+      </p>
+      
+      <div class="placeholder-content bg-light p-4 rounded">
+        <h6>Aperçu de la future logique :</h6>
+        <div class="row">
+          <div class="col-md-6">
+            <h6>Exemples de synergies :</h6>
+            <ul>
+              <li><strong>Elfe</strong> + <strong>Ranger</strong> → Force en Dextérité</li>
+              <li><strong>Nain</strong> + <strong>Guerrier</strong> → Force en Constitution</li>
+              <li><strong>Drakéide</strong> + <strong>Paladin</strong> → Force et Charisme</li>
+              <li><strong>Gnome</strong> + <strong>Magicien</strong> → Intelligence maximisée</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6>Fonctionnalités :</h6>
+            <ul>
+              <li>Base de données des races et classes</li>
+              <li>Algorithme de compatibilité</li>
+              <li>Attribution intelligente des points</li>
+              <li>Validation de la viabilité</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <a href="{% url 'characters:choose_generation_method' universe.pk %}" class="btn btn-secondary">
+      ← Retour aux méthodes
+    </a>
+  </div>
+</div>
+{% endblock %}

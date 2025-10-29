@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h2>{{ method_name }} — {{ universe.name }}</h2>
+  
+  <div class="alert alert-primary">
+    <h4>✏️ Création Manuelle D&D 5e</h4>
+    <p>Cette méthode vous permet un contrôle total sur :</p>
+    <ul>
+      <li>Choix de la race parmi toutes celles de D&D 5e</li>
+      <li>Choix de la classe et sous-classe</li>
+      <li>Attribution manuelle des points de caractéristiques</li>
+      <li>Sélection des compétences, équipements et sorts</li>
+      <li>Création du background personnalisé</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">🚧 Fonctionnalité en développement</h5>
+      <p class="card-text">
+        Cette interface de création manuelle avancée sera bientôt disponible ! 
+        Elle offrira tous les choix et options officiels de D&D 5e.
+      </p>
+      
+      <div class="placeholder-content bg-light p-4 rounded">
+        <h6>Aperçu de la future interface :</h6>
+        <ul>
+          <li>Étape 1 : Sélection de race avec modificateurs automatiques</li>
+          <li>Étape 2 : Choix de classe et sous-classe</li>
+          <li>Étape 3 : Attribution des caractéristiques</li>
+          <li>Étape 4 : Sélection des compétences</li>
+          <li>Étape 5 : Équipement de départ</li>
+          <li>Étape 6 : Background et traits de personnalité</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <a href="{% url 'characters:choose_generation_method' universe.pk %}" class="btn btn-secondary">
+      ← Retour aux méthodes
+    </a>
+    <a href="{% url 'characters:character_create' %}" class="btn btn-primary">
+      Utiliser la création actuelle (temporaire)
+    </a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h2>{{ method_name }} — {{ universe.name }}</h2>
+  
+  <div class="alert alert-warning">
+    <h4>🎯 Système à 27 Points D&D 5e</h4>
+    <p>Méthode officielle de D&D 5e :</p>
+    <ul>
+      <li><strong>27 points</strong> à répartir dans vos 6 caractéristiques</li>
+      <li>Valeurs de base entre <strong>8 et 15</strong> (avant modificateurs raciaux)</li>
+      <li>Coût progressif : 8=0pts, 9=1pt, 10=2pts, 11=3pts, 12=4pts, 13=5pts, 14=7pts, 15=9pts</li>
+      <li>Exemples : (15,15,15,8,8,8) ou (13,13,13,12,12,12)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">🚧 Calculateur en développement</h5>
+      <p class="card-text">
+        Le calculateur de points sera bientôt disponible ! Il permettra une répartition 
+        interactive avec validation en temps réel.
+      </p>
+      
+      <div class="placeholder-content bg-light p-4 rounded">
+        <h6>Aperçu de la future interface :</h6>
+        <div class="row">
+          <div class="col-md-6">
+            <h6>Calculateur interactif :</h6>
+            <ul>
+              <li>Sliders pour chaque caractéristique</li>
+              <li>Affichage du coût en temps réel</li>
+              <li>Points restants visibles</li>
+              <li>Validation automatique des limites</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6>Table des coûts :</h6>
+            <table class="table table-sm">
+              <thead><tr><th>Valeur</th><th>Coût</th></tr></thead>
+              <tbody>
+                <tr><td>8</td><td>0</td></tr>
+                <tr><td>9</td><td>1</td></tr>
+                <tr><td>10</td><td>2</td></tr>
+                <tr><td>11</td><td>3</td></tr>
+                <tr><td>12</td><td>4</td></tr>
+                <tr><td>13</td><td>5</td></tr>
+                <tr><td>14</td><td>7</td></tr>
+                <tr><td>15</td><td>9</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <a href="{% url 'characters:choose_generation_method' universe.pk %}" class="btn btn-secondary">
+      ← Retour aux méthodes
+    </a>
+  </div>
+</div>
+{% endblock %}

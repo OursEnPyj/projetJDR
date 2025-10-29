@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Liste des personnages</h2>
-<a href="{% url 'characters:character_create' %}" class="btn btn-success mb-3">+ Créer un nouveau personnage</a>
+<div class="mb-3">
+  <a href="{% url 'characters:character_create' %}" class="btn btn-success">+ Créer manuellement</a>
+  <a href="{% url 'characters:choose_universe_for_generation' %}" class="btn btn-primary">🎲 Générer un personnage</a>
+</div>
 <div class="row">
   {% for character in characters %}
   <div class="col-md-6 col-lg-4 mb-3">
@@ -23,7 +26,14 @@
   </div>
   {% empty %}
   <div class="col-12">
-    <div class="alert alert-info">Aucun personnage pour le moment.</div>
+    <div class="alert alert-info">
+      <h4>Aucun personnage pour le moment.</h4>
+      <p>Vous pouvez :</p>
+      <ul>
+        <li>Créer un personnage manuellement avec le bouton "Créer manuellement"</li>
+        <li>Ou aller générer un personnage via les univers avec le bouton "Générer un personnage"</li>
+      </ul>
+    </div>
   </div>
   {% endfor %}
 </div>
