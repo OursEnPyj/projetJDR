@@ -3,6 +3,7 @@ from django.urls import reverse
 from .models import Character
 from .forms import CharacterForm
 from universes.models import Universe
+from .dnd_generator import generate_random_character
 
 
 def character_list(request):
@@ -87,9 +88,36 @@ def choose_generation_method(request, universe_id):
 def dnd_random_generation(request, universe_id):
     """Génération complètement aléatoire pour D&D 5e."""
     universe = get_object_or_404(Universe, pk=universe_id)
+    
+    generated = None
+    if request.method == "POST":
+        action = request.POST.get("action")
+        
+        if action == "generate":
+            # Générer un nouveau personnage aléatoire
+            generated = generate_random_character(universe)
+        elif action == "save":
+            # Sauvegarder le personnage généré
+            character = Character.objects.create(
+                name=request.POST.get("character_name"),
+                race=request.POST.get("character_race"),
+                char_class=request.POST.get("character_class"),
+                strength=int(request.POST.get("character_strength", 10)),
+                dexterity=int(request.POST.get("character_dexterity", 10)),
+                constitution=int(request.POST.get("character_constitution", 10)),
+                intelligence=int(request.POST.get("character_intelligence", 10)),
+                wisdom=int(request.POST.get("character_wisdom", 10)),
+                charisma=int(request.POST.get("character_charisma", 10)),
+                description=request.POST.get("character_description", ""),
+                background=request.POST.get("character_background", ""),
+                universe=universe,
+            )
+            return redirect('characters:character_detail', pk=character.pk)
+    
     return render(request, 'characters/dnd_random_generation.html', {
         'universe': universe,
-        'method_name': 'Génération Aléatoire'
+        'method_name': 'Génération Aléatoire',
+        'generated': generated
     })
 
 

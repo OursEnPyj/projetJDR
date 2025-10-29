@@ -7,40 +7,130 @@
     <h4>🎲 Génération Aléatoire D&D 5e</h4>
     <p>Cette méthode génère complètement au hasard :</p>
     <ul>
-      <li>Race parmi celles disponibles en D&D 5e</li>
-      <li>Classe parmi celles disponibles en D&D 5e</li>
-      <li>Caractéristiques (lancers de dés 4d6, garder les 3 meilleurs)</li>
-      <li>Traits de personnalité, idéaux, liens et défauts</li>
+      <li><strong>Race</strong> parmi 10 races de D&D 5e (en français)</li>
+      <li><strong>Classe</strong> parmi 13 classes de D&D 5e (en français)</li>
+      <li><strong>Nom</strong> adapté à la race choisie</li>
+      <li><strong>Caractéristiques</strong> avec la méthode 4d6 (garder les 3 meilleurs)</li>
+      <li><strong>Description physique</strong> cohérente avec la race</li>
+      <li><strong>Background</strong> narratif détaillé</li>
     </ul>
   </div>
 
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">🚧 Fonctionnalité en développement</h5>
-      <p class="card-text">
-        Cette méthode de génération sera bientôt disponible ! Elle permettra de créer rapidement 
-        des personnages entièrement aléatoires mais cohérents pour D&D 5e.
-      </p>
-      
-      <div class="placeholder-content bg-light p-4 rounded">
-        <h6>Aperçu de la future interface :</h6>
-        <ul>
-          <li>Bouton "Générer un personnage aléatoire"</li>
-          <li>Affichage du personnage généré avec toutes ses caractéristiques</li>
-          <li>Possibilité de regénérer certains aspects</li>
-          <li>Bouton "Sauvegarder ce personnage"</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <div class="mt-4">
+  <!-- Formulaire de génération -->
+  <form method="post" class="mb-4">
+    {% csrf_token %}
+    <button class="btn btn-success btn-lg" type="submit" name="action" value="generate">
+      🎲 Générer un personnage aléatoire
+    </button>
     <a href="{% url 'characters:choose_generation_method' universe.pk %}" class="btn btn-secondary">
       ← Retour aux méthodes
     </a>
-    <a href="{% url 'universes:generate_character' universe.pk %}" class="btn btn-primary">
-      Utiliser la génération actuelle (temporaire)
-    </a>
-  </div>
+  </form>
+
+  <!-- Affichage du personnage généré -->
+  {% if generated %}
+    <div class="card">
+      <div class="card-header">
+        <h3>{{ generated.name }} - {{ generated.race }} {{ generated.char_class }}</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <!-- Caractéristiques -->
+          <div class="col-md-6">
+            <h5>📊 Caractéristiques</h5>
+            <div class="row">
+              <div class="col-6">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item d-flex justify-content-between">
+                    <strong>Force</strong> <span class="badge bg-primary">{{ generated.strength }}</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between">
+                    <strong>Dextérité</strong> <span class="badge bg-primary">{{ generated.dexterity }}</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between">
+                    <strong>Constitution</strong> <span class="badge bg-primary">{{ generated.constitution }}</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="col-6">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item d-flex justify-content-between">
+                    <strong>Intelligence</strong> <span class="badge bg-primary">{{ generated.intelligence }}</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between">
+                    <strong>Sagesse</strong> <span class="badge bg-primary">{{ generated.wisdom }}</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between">
+                    <strong>Charisme</strong> <span class="badge bg-primary">{{ generated.charisma }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Informations générales -->
+          <div class="col-md-6">
+            <h5>👤 Informations</h5>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <strong>Race :</strong> {{ generated.race }}
+              </li>
+              <li class="list-group-item">
+                <strong>Classe :</strong> {{ generated.char_class }}
+              </li>
+              <li class="list-group-item">
+                <strong>Univers :</strong> {{ generated.universe.name }}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Description physique -->
+        <div class="mt-4">
+          <h5>🎨 Description physique</h5>
+          <p class="bg-light p-3 rounded">{{ generated.description }}</p>
+        </div>
+
+        <!-- Background -->
+        <div class="mt-4">
+          <h5>📜 Histoire du personnage</h5>
+          <p class="bg-light p-3 rounded">{{ generated.background }}</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-4">
+          <form method="post" class="d-inline">
+            {% csrf_token %}
+            <input type="hidden" name="character_name" value="{{ generated.name }}">
+            <input type="hidden" name="character_race" value="{{ generated.race }}">
+            <input type="hidden" name="character_class" value="{{ generated.char_class }}">
+            <input type="hidden" name="character_strength" value="{{ generated.strength }}">
+            <input type="hidden" name="character_dexterity" value="{{ generated.dexterity }}">
+            <input type="hidden" name="character_constitution" value="{{ generated.constitution }}">
+            <input type="hidden" name="character_intelligence" value="{{ generated.intelligence }}">
+            <input type="hidden" name="character_wisdom" value="{{ generated.wisdom }}">
+            <input type="hidden" name="character_charisma" value="{{ generated.charisma }}">
+            <input type="hidden" name="character_description" value="{{ generated.description }}">
+            <input type="hidden" name="character_background" value="{{ generated.background }}">
+            <button type="submit" name="action" value="save" class="btn btn-primary btn-lg">
+              💾 Sauvegarder ce personnage
+            </button>
+          </form>
+          
+          <form method="post" class="d-inline ms-2">
+            {% csrf_token %}
+            <button type="submit" name="action" value="generate" class="btn btn-warning">
+              🔄 Générer un autre personnage
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-secondary">
+      <h5>🎯 Prêt à générer !</h5>
+      <p>Cliquez sur le bouton "Générer un personnage aléatoire" pour créer un personnage D&D 5e unique !</p>
+    </div>
+  {% endif %}
 </div>
 {% endblock %}
