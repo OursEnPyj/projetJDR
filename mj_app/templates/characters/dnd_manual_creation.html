@@ -1,49 +1,599 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container">
-  <h2>{{ method_name }} — {{ universe.name }}</h2>
-  
-  <div class="alert alert-primary">
-    <h4>✏️ Création Manuelle D&D 5e</h4>
-    <p>Cette méthode vous permet un contrôle total sur :</p>
-    <ul>
-      <li>Choix de la race parmi toutes celles de D&D 5e</li>
-      <li>Choix de la classe et sous-classe</li>
-      <li>Attribution manuelle des points de caractéristiques</li>
-      <li>Sélection des compétences, équipements et sorts</li>
-      <li>Création du background personnalisé</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">🚧 Fonctionnalité en développement</h5>
-      <p class="card-text">
-        Cette interface de création manuelle avancée sera bientôt disponible ! 
-        Elle offrira tous les choix et options officiels de D&D 5e.
-      </p>
-      
-      <div class="placeholder-content bg-light p-4 rounded">
-        <h6>Aperçu de la future interface :</h6>
-        <ul>
-          <li>Étape 1 : Sélection de race avec modificateurs automatiques</li>
-          <li>Étape 2 : Choix de classe et sous-classe</li>
-          <li>Étape 3 : Attribution des caractéristiques</li>
-          <li>Étape 4 : Sélection des compétences</li>
-          <li>Étape 5 : Équipement de départ</li>
-          <li>Étape 6 : Background et traits de personnalité</li>
-        </ul>
-      </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-user-edit text-primary"></i>
+                {{ method_name }} — {{ universe.name }}
+            </h2>
+        </div>
     </div>
-  </div>
 
-  <div class="mt-4">
-    <a href="{% url 'characters:choose_generation_method' universe.pk %}" class="btn btn-secondary">
-      ← Retour aux méthodes
-    </a>
-    <a href="{% url 'characters:character_create' %}" class="btn btn-primary">
-      Utiliser la création actuelle (temporaire)
-    </a>
-  </div>
+    <form method="post" id="characterForm">
+        {% csrf_token %}
+        <div class="row">
+            <!-- Navigation par onglets -->
+            <div class="col-md-3">
+                <div class="card sticky-top" style="top: 20px;">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-list"></i> Étapes de création</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a class="list-group-item list-group-item-action active" href="#step1" data-bs-toggle="tab">
+                            <i class="fas fa-user"></i> 1. Identité
+                        </a>
+                        <a class="list-group-item list-group-item-action" href="#step2" data-bs-toggle="tab">
+                            <i class="fas fa-dragon"></i> 2. Race
+                        </a>
+                        <a class="list-group-item list-group-item-action" href="#step3" data-bs-toggle="tab">
+                            <i class="fas fa-sword"></i> 3. Classe
+                        </a>
+                        <a class="list-group-item list-group-item-action" href="#step4" data-bs-toggle="tab">
+                            <i class="fas fa-dumbbell"></i> 4. Caractéristiques
+                        </a>
+                        <a class="list-group-item list-group-item-action" href="#step5" data-bs-toggle="tab">
+                            <i class="fas fa-scroll"></i> 5. Historique
+                        </a>
+                        <a class="list-group-item list-group-item-action" href="#step6" data-bs-toggle="tab">
+                            <i class="fas fa-check"></i> 6. Finalisation
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenu des onglets -->
+            <div class="col-md-9">
+                <div class="tab-content">
+                    <!-- Étape 1: Identité -->
+                    <div class="tab-pane fade show active" id="step1">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fas fa-user text-primary"></i> Identité du personnage</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Nom du personnage *</label>
+                                            <input type="text" class="form-control form-control-lg" id="name" name="name" 
+                                                   placeholder="Entrez le nom de votre personnage" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="level" class="form-label">Niveau</label>
+                                            <input type="number" class="form-control" id="level" name="level" 
+                                                   value="1" min="1" max="20" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description physique</label>
+                                    <textarea class="form-control" id="description" name="description" rows="3"
+                                              placeholder="Décrivez l'apparence de votre personnage..."></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="background_story" class="form-label">Histoire personnelle</label>
+                                    <textarea class="form-control" id="background_story" name="background_story" rows="4"
+                                              placeholder="Racontez l'histoire de votre personnage, son passé, ses motivations..."></textarea>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle"></i> Différent de l'historique D&D - c'est votre propre narration
+                                    </small>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-primary" onclick="nextTab('#step2')">
+                                        Suivant: Race <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étape 2: Race -->
+                    <div class="tab-pane fade" id="step2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fas fa-dragon text-primary"></i> Choix de la race</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for race_key, race_data in races.items %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 race-card" data-race="{{ race_key }}">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="race" 
+                                                           id="race_{{ race_key }}" value="{{ race_data.name }}"
+                                                           onchange="selectRace('{{ race_key }}')">
+                                                    <label class="form-check-label" for="race_{{ race_key }}">
+                                                        <h5 class="card-title">{{ race_data.name }}</h5>
+                                                    </label>
+                                                </div>
+                                                <p class="card-text small">{{ race_data.description }}</p>
+                                                <div class="small">
+                                                    <strong>Bonus:</strong>
+                                                    {% for ability, bonus in race_data.ability_bonuses.items %}
+                                                        +{{ bonus }} {{ ability|title }}{% if not forloop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="small mt-1">
+                                                    <strong>Taille:</strong> {{ race_data.size }} | 
+                                                    <strong>Vitesse:</strong> {{ race_data.speed }} ft
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-flex justify-content-between mt-3">
+                                    <button type="button" class="btn btn-secondary" onclick="previousTab('#step1')">
+                                        <i class="fas fa-arrow-left"></i> Précédent
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="nextTab('#step3')">
+                                        Suivant: Classe <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étape 3: Classe -->
+                    <div class="tab-pane fade" id="step3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fas fa-sword text-primary"></i> Choix de la classe</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for class_key, class_data in classes.items %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 class-card" data-class="{{ class_key }}">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="character_class" 
+                                                           id="class_{{ class_key }}" value="{{ class_data.name }}"
+                                                           onchange="selectClass('{{ class_key }}')">
+                                                    <label class="form-check-label" for="class_{{ class_key }}">
+                                                        <h5 class="card-title">{{ class_data.name }}</h5>
+                                                    </label>
+                                                </div>
+                                                <p class="card-text small">{{ class_data.description }}</p>
+                                                <div class="small">
+                                                    <strong>DV:</strong> d{{ class_data.hit_die }} | 
+                                                    <strong>Carac. principales:</strong> 
+                                                    {% for ability in class_data.primary_abilities %}
+                                                        {{ ability }}{% if not forloop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="small mt-1">
+                                                    <strong>JdS:</strong> 
+                                                    {% for save in class_data.saving_throws %}
+                                                        {{ save }}{% if not forloop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-flex justify-content-between mt-3">
+                                    <button type="button" class="btn btn-secondary" onclick="previousTab('#step2')">
+                                        <i class="fas fa-arrow-left"></i> Précédent
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="nextTab('#step4')">
+                                        Suivant: Caractéristiques <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étape 4: Caractéristiques -->
+                    <div class="tab-pane fade" id="step4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fas fa-dumbbell text-primary"></i> Attribution des caractéristiques</h4>
+                                <small class="text-muted">Utilisez les valeurs standard (15, 14, 13, 12, 10, 8) ou entrez vos propres valeurs</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <button type="button" class="btn btn-outline-primary btn-sm mb-3" onclick="useStandardArray()">
+                                                Utiliser le tableau standard (15, 14, 13, 12, 10, 8)
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="strength" class="form-label">Force</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="strength" name="strength" 
+                                                       min="3" max="18" value="10" onchange="updateModifier('strength')">
+                                                <span class="input-group-text" id="strength-mod">+0</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="dexterity" class="form-label">Dextérité</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="dexterity" name="dexterity" 
+                                                       min="3" max="18" value="10" onchange="updateModifier('dexterity')">
+                                                <span class="input-group-text" id="dexterity-mod">+0</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="constitution" class="form-label">Constitution</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="constitution" name="constitution" 
+                                                       min="3" max="18" value="10" onchange="updateModifier('constitution')">
+                                                <span class="input-group-text" id="constitution-mod">+0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <br><br> <!-- Espacement pour aligner avec le bouton -->
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="intelligence" class="form-label">Intelligence</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="intelligence" name="intelligence" 
+                                                       min="3" max="18" value="10" onchange="updateModifier('intelligence')">
+                                                <span class="input-group-text" id="intelligence-mod">+0</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="wisdom" class="form-label">Sagesse</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="wisdom" name="wisdom" 
+                                                       min="3" max="18" value="10" onchange="updateModifier('wisdom')">
+                                                <span class="input-group-text" id="wisdom-mod">+0</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="charisma" class="form-label">Charisme</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="charisma" name="charisma" 
+                                                       min="3" max="18" value="10" onchange="updateModifier('charisma')">
+                                                <span class="input-group-text" id="charisma-mod">+0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info">
+                                    <strong>💡 Conseil:</strong> Les bonus raciaux seront appliqués automatiquement lors de la finalisation.
+                                </div>
+                                
+                                <div class="d-flex justify-content-between mt-3">
+                                    <button type="button" class="btn btn-secondary" onclick="previousTab('#step3')">
+                                        <i class="fas fa-arrow-left"></i> Précédent
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="nextTab('#step5')">
+                                        Suivant: Historique <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étape 5: Historique -->
+                    <div class="tab-pane fade" id="step5">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fas fa-scroll text-primary"></i> Historique du personnage</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for bg_key, bg_data in backgrounds.items %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 background-card" data-background="{{ bg_key }}">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="background" 
+                                                           id="bg_{{ bg_key }}" value="{{ bg_data.name }}">
+                                                    <label class="form-check-label" for="bg_{{ bg_key }}">
+                                                        <h5 class="card-title">{{ bg_data.name }}</h5>
+                                                    </label>
+                                                </div>
+                                                <div class="small">
+                                                    <strong>Compétences:</strong>
+                                                    {% for skill in bg_data.skills %}
+                                                        {{ skill }}{% if not forloop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="small mt-1">
+                                                    <strong>Aptitude:</strong> {{ bg_data.feature }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-flex justify-content-between mt-3">
+                                    <button type="button" class="btn btn-secondary" onclick="previousTab('#step4')">
+                                        <i class="fas fa-arrow-left"></i> Précédent
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="nextTab('#step6')">
+                                        Finaliser <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étape 6: Finalisation -->
+                    <div class="tab-pane fade" id="step6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fas fa-check text-success"></i> Récapitulatif et finalisation</h4>
+                            </div>
+                            <div class="card-body">
+                                <div id="character-summary">
+                                    <!-- Le récapitulatif sera généré par JavaScript -->
+                                </div>
+                                
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button type="button" class="btn btn-secondary" onclick="previousTab('#step5')">
+                                        <i class="fas fa-arrow-left"></i> Précédent
+                                    </button>
+                                    <div>
+                                        <a href="{% url 'characters:choose_generation_method' universe.pk %}" class="btn btn-outline-secondary me-2">
+                                            Annuler
+                                        </a>
+                                        <button type="submit" name="save_character" class="btn btn-success btn-lg">
+                                            <i class="fas fa-save"></i> Créer le personnage
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
+
+<style>
+.race-card:hover, .class-card:hover, .background-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
+
+.race-card.selected, .class-card.selected, .background-card.selected {
+    border-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+.sticky-top {
+    z-index: 1020;
+}
+
+.tab-content {
+    min-height: 500px;
+}
+</style>
+
+<script>
+// Navigation entre onglets avec validation
+function nextTab(target) {
+    // Validation basique selon l'étape actuelle
+    const currentTab = document.querySelector('.tab-pane.active').id;
+    
+    if (currentTab === 'step1') {
+        const name = document.getElementById('name').value.trim();
+        if (!name) {
+            alert('Veuillez entrer un nom pour votre personnage.');
+            return;
+        }
+    }
+    
+    if (currentTab === 'step2') {
+        const race = document.querySelector('input[name="race"]:checked');
+        if (!race) {
+            alert('Veuillez sélectionner une race.');
+            return;
+        }
+    }
+    
+    if (currentTab === 'step3') {
+        const characterClass = document.querySelector('input[name="character_class"]:checked');
+        if (!characterClass) {
+            alert('Veuillez sélectionner une classe.');
+            return;
+        }
+    }
+    
+    if (currentTab === 'step5') {
+        const background = document.querySelector('input[name="background"]:checked');
+        if (!background) {
+            alert('Veuillez sélectionner un historique.');
+            return;
+        }
+    }
+    
+    // Désactiver l'onglet actuel
+    document.querySelectorAll('.list-group-item-action').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.classList.remove('show', 'active');
+    });
+    
+    // Activer le nouvel onglet
+    const tabLink = document.querySelector(`a[href="${target}"]`);
+    const targetPane = document.querySelector(target);
+    
+    if (tabLink && targetPane) {
+        tabLink.classList.add('active');
+        targetPane.classList.add('show', 'active');
+        
+        // Générer le récapitulatif si on arrive à l'étape 6
+        if (target === '#step6') {
+            generateSummary();
+        }
+    }
+}
+
+function previousTab(target) {
+    // Désactiver l'onglet actuel
+    document.querySelectorAll('.list-group-item-action').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.classList.remove('show', 'active');
+    });
+    
+    // Activer le nouvel onglet
+    const tabLink = document.querySelector(`a[href="${target}"]`);
+    const targetPane = document.querySelector(target);
+    
+    if (tabLink && targetPane) {
+        tabLink.classList.add('active');
+        targetPane.classList.add('show', 'active');
+    }
+}
+
+// Sélection de race
+function selectRace(raceKey) {
+    document.querySelectorAll('.race-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    document.querySelector(`.race-card[data-race="${raceKey}"]`).classList.add('selected');
+}
+
+// Sélection de classe
+function selectClass(classKey) {
+    document.querySelectorAll('.class-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    document.querySelector(`.class-card[data-class="${classKey}"]`).classList.add('selected');
+}
+
+// Utiliser le tableau standard
+function useStandardArray() {
+    const standardValues = [15, 14, 13, 12, 10, 8];
+    const abilities = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+    
+    abilities.forEach((ability, index) => {
+        document.getElementById(ability).value = standardValues[index];
+        updateModifier(ability);
+    });
+}
+
+// Mettre à jour les modificateurs
+function updateModifier(ability) {
+    const score = parseInt(document.getElementById(ability).value);
+    const modifier = Math.floor((score - 10) / 2);
+    const modifierText = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+    document.getElementById(`${ability}-mod`).textContent = modifierText;
+}
+
+// Générer le récapitulatif
+function generateSummary() {
+    const name = document.getElementById('name').value || 'Nom non défini';
+    const race = document.querySelector('input[name="race"]:checked')?.value || 'Race non sélectionnée';
+    const characterClass = document.querySelector('input[name="character_class"]:checked')?.value || 'Classe non sélectionnée';
+    const background = document.querySelector('input[name="background"]:checked')?.value || 'Historique non sélectionné';
+    const description = document.getElementById('description').value || 'Aucune description';
+    
+    const abilities = {
+        'Force': document.getElementById('strength').value,
+        'Dextérité': document.getElementById('dexterity').value,
+        'Constitution': document.getElementById('constitution').value,
+        'Intelligence': document.getElementById('intelligence').value,
+        'Sagesse': document.getElementById('wisdom').value,
+        'Charisme': document.getElementById('charisma').value
+    };
+    
+    let summaryHtml = `
+        <div class="row">
+            <div class="col-md-6">
+                <h5><i class="fas fa-user text-primary"></i> Informations générales</h5>
+                <ul class="list-unstyled">
+                    <li><strong>Nom:</strong> ${name}</li>
+                    <li><strong>Race:</strong> ${race}</li>
+                    <li><strong>Classe:</strong> ${characterClass}</li>
+                    <li><strong>Historique:</strong> ${background}</li>
+                </ul>
+                
+                <h5 class="mt-4"><i class="fas fa-scroll text-primary"></i> Description</h5>
+                <p class="text-muted">${description || 'Aucune description fournie'}</p>
+            </div>
+            <div class="col-md-6">
+                <h5><i class="fas fa-dumbbell text-primary"></i> Caractéristiques</h5>
+                <div class="row">
+    `;
+    
+    Object.entries(abilities).forEach(([ability, score]) => {
+        const modifier = Math.floor((score - 10) / 2);
+        const modifierText = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+        summaryHtml += `
+            <div class="col-6 mb-2">
+                <div class="d-flex justify-content-between">
+                    <strong>${ability}:</strong> 
+                    <span>${score} (${modifierText})</span>
+                </div>
+            </div>
+        `;
+    });
+    
+    summaryHtml += `
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-success mt-3">
+            <i class="fas fa-check-circle"></i> <strong>Personnage prêt à être créé !</strong>
+            <br><small>Vérifiez les informations ci-dessus avant de finaliser la création.</small>
+        </div>
+    `;
+    
+    document.getElementById('character-summary').innerHTML = summaryHtml;
+}
+
+// Événements
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser les modificateurs
+    ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].forEach(updateModifier);
+    
+    // Ajouter des gestionnaires d'événements pour les clics sur les onglets
+    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = this.getAttribute('href');
+            
+            // Désactiver tous les onglets
+            document.querySelectorAll('.list-group-item-action').forEach(t => {
+                t.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('show', 'active');
+            });
+            
+            // Activer l'onglet cliqué
+            this.classList.add('active');
+            document.querySelector(target).classList.add('show', 'active');
+            
+            // Générer le récapitulatif si on arrive à l'étape 6
+            if (target === '#step6') {
+                generateSummary();
+            }
+        });
+    });
+    
+    // Générer le récapitulatif initial si on est déjà sur l'étape 6
+    if (document.querySelector('#step6').classList.contains('active')) {
+        generateSummary();
+    }
+});
+</script>
 {% endblock %}

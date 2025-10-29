@@ -1,47 +1,377 @@
 {% extends 'base.html' %}
+{% load character_extras %}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-8">
-      <h2>{{ character.name }}</h2>
-      <p><strong>Race :</strong> {{ character.race }}</p>
-      <p><strong>Classe :</strong> {{ character.char_class }}</p>
-      <p><strong>Univers :</strong> {{ character.universe.name }}</p>
-
-      <h3>Caractéristiques</h3>
-      <div class="row">
-        <div class="col-md-6">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">Force : <strong>{{ character.strength }}</strong></li>
-            <li class="list-group-item">Dextérité : <strong>{{ character.dexterity }}</strong></li>
-            <li class="list-group-item">Constitution : <strong>{{ character.constitution }}</strong></li>
-          </ul>
+<div class="container-fluid px-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="text-primary">
+                    <i class="fas fa-user-circle"></i> {{ character.name }}
+                </h1>
+                <div class="btn-group">
+                    <a href="{% url 'characters:character_update' character.pk %}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    <a href="{% url 'characters:character_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-list"></i> Retour à la liste
+                    </a>
+                    <a href="{% url 'characters:character_delete' character.pk %}" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">Intelligence : <strong>{{ character.intelligence }}</strong></li>
-            <li class="list-group-item">Sagesse : <strong>{{ character.wisdom }}</strong></li>
-            <li class="list-group-item">Charisme : <strong>{{ character.charisma }}</strong></li>
-          </ul>
-        </div>
-      </div>
-
-      {% if character.description %}
-      <h3 class="mt-4">Description</h3>
-      <p>{{ character.description|linebreaks }}</p>
-      {% endif %}
-
-      {% if character.background %}
-      <h3 class="mt-4">Histoire</h3>
-      <p>{{ character.background|linebreaks }}</p>
-      {% endif %}
-
-      <div class="mt-4">
-        <a href="{% url 'characters:character_update' character.pk %}" class="btn btn-warning">Modifier</a>
-        <a href="{% url 'characters:character_list' %}" class="btn btn-secondary">Retour à la liste</a>
-        <a href="{% url 'characters:character_delete' character.pk %}" class="btn btn-danger">Supprimer</a>
-      </div>
     </div>
-  </div>
+
+    <!-- Informations de base sur toute la largeur -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-info-circle"></i> Informations générales</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-xl-2 col-lg-3 col-md-4 col-6">
+                            <strong>Race :</strong><br>
+                            {{ character.race|default:"Non définie" }}
+                        </div>
+                        <div class="col-xl-2 col-lg-3 col-md-4 col-6">
+                            <strong>Classe :</strong><br>
+                            {{ character.char_class|default:"Non définie" }}
+                        </div>
+                        <div class="col-xl-2 col-lg-3 col-md-4 col-6">
+                            <strong>Niveau :</strong><br>
+                            {{ character.level|default:1 }}
+                        </div>
+                        <div class="col-xl-2 col-lg-3 col-md-4 col-6">
+                            <strong>Historique :</strong><br>
+                            {{ character.dnd_background|default:"Non défini" }}
+                        </div>
+                        <div class="col-xl-2 col-lg-6 col-md-4 col-6">
+                            <strong>Univers :</strong><br>
+                            {{ character.universe.name }}
+                        </div>
+                        <div class="col-xl-2 col-lg-6 col-md-4 col-6">
+                            <strong>Créé le :</strong><br>
+                            {{ character.created_at|date:"d/m/Y" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Caractéristiques simplifiées sur toute la largeur -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-dumbbell"></i> Caractéristiques</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-6 mb-3">
+                            <div class="ability-simple">
+                                <div class="ability-name">FORCE</div>
+                                <div class="ability-score">{{ character.strength }}</div>
+                                <div class="ability-mod">{{ character.strength|modifier_display }}</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-6 mb-3">
+                            <div class="ability-simple">
+                                <div class="ability-name">DEXTÉRITÉ</div>
+                                <div class="ability-score">{{ character.dexterity }}</div>
+                                <div class="ability-mod">{{ character.dexterity|modifier_display }}</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-6 mb-3">
+                            <div class="ability-simple">
+                                <div class="ability-name">CONSTITUTION</div>
+                                <div class="ability-score">{{ character.constitution }}</div>
+                                <div class="ability-mod">{{ character.constitution|modifier_display }}</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-6 mb-3">
+                            <div class="ability-simple">
+                                <div class="ability-name">INTELLIGENCE</div>
+                                <div class="ability-score">{{ character.intelligence }}</div>
+                                <div class="ability-mod">{{ character.intelligence|modifier_display }}</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-6 mb-3">
+                            <div class="ability-simple">
+                                <div class="ability-name">SAGESSE</div>
+                                <div class="ability-score">{{ character.wisdom }}</div>
+                                <div class="ability-mod">{{ character.wisdom|modifier_display }}</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-6 mb-3">
+                            <div class="ability-simple">
+                                <div class="ability-name">CHARISME</div>
+                                <div class="ability-score">{{ character.charisma }}</div>
+                                <div class="ability-mod">{{ character.charisma|modifier_display }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenu principal réparti sur toute la largeur -->
+    <div class="row">
+        <!-- Descriptions sur la largeur -->
+        {% if character.description or character.background_story %}
+        <div class="col-12 mb-4">
+            <div class="row">
+                {% if character.description %}
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-portrait"></i> Description physique</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0">{{ character.description|linebreaks }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if character.background_story %}
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0"><i class="fas fa-book"></i> Histoire personnelle</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0">{{ character.background_story|linebreaks }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Compétences sur plus de largeur -->
+        {% if character.skills %}
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-star"></i> Compétences</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for skill_key, skill_data in character.skills.items %}
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <div class="skill-simple d-flex justify-content-between align-items-center">
+                                <span class="skill-name {% if skill_data.proficient %}text-primary fw-bold{% endif %}" title="{{ skill_data.name }}">
+                                    {{ skill_data.name|truncatechars:15 }}
+                                </span>
+                                <span class="badge {% if skill_data.proficient %}bg-primary{% else %}bg-secondary{% endif %}">
+                                    {% if skill_data.bonus >= 0 %}+{% endif %}{{ skill_data.bonus }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <small class="text-muted mt-2 d-block">
+                        <i class="fas fa-info-circle"></i> En bleu : compétences maîtrisées
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Traits et capacités -->
+        {% if character.features %}
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-magic"></i> Traits et capacités</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for feature in character.features %}
+                        <div class="col-lg-6 mb-3">
+                            <div class="feature-simple">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <strong class="feature-name">{{ feature.name }}</strong>
+                                    <span class="badge bg-outline-secondary small">{{ feature.type }}</span>
+                                </div>
+                                <small class="text-muted">{{ feature.description }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Équipement et langues sur le bas -->
+        {% if character.equipment or character.languages %}
+        <div class="col-12">
+            <div class="row">
+                {% if character.equipment %}
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0"><i class="fas fa-backpack"></i> Équipement</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for item in character.equipment %}
+                                <div class="col-xl-3 col-lg-4 col-md-6 mb-1">
+                                    <div class="equipment-simple">
+                                        <i class="fas fa-circle text-primary me-2" style="font-size: 6px;"></i>
+                                        {{ item }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if character.languages %}
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-language"></i> Langues</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            {% for language in character.languages %}
+                            <span class="badge bg-success me-1 mb-1">{{ language }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
 </div>
+</div>
+
+<style>
+/* Container avec plus de largeur */
+.container-fluid {
+    max-width: 95%;
+    margin: 0 auto;
+}
+
+/* Caractéristiques simples et lisibles */
+.ability-simple {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    height: 100%;
+}
+
+.ability-name {
+    font-size: 12px;
+    font-weight: bold;
+    color: #6c757d;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.ability-score {
+    font-size: 24px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 5px;
+}
+
+.ability-mod {
+    font-size: 14px;
+    background: #6c757d;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    min-width: 35px;
+}
+
+/* Compétences simplifiées */
+.skill-simple {
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.skill-name {
+    font-size: 13px;
+}
+
+/* Traits simplifiés */
+.feature-simple {
+    padding: 10px;
+    background: #f8f9fa;
+    border-left: 3px solid #dc3545;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 8px;
+}
+
+.feature-name {
+    color: #dc3545;
+    font-size: 14px;
+}
+
+/* Équipement simplifié */
+.equipment-simple {
+    font-size: 14px;
+    padding: 3px 0;
+}
+
+/* Cards avec espacement réduit */
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid #dee2e6;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    padding: 0.75rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* Responsive avec plus d'espace */
+@media (max-width: 768px) {
+    .container-fluid {
+        max-width: 98%;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .ability-score {
+        font-size: 20px;
+    }
+    
+    .ability-name {
+        font-size: 11px;
+    }
+}
+
+/* Espacement uniforme */
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Hauteur minimum pour les cards */
+.h-100 {
+    min-height: 200px;
+}
+</style>
 {% endblock %}

@@ -122,12 +122,116 @@ def dnd_random_generation(request, universe_id):
 
 
 def dnd_manual_creation(request, universe_id):
-    """Création manuelle pour D&D 5e."""
+    """Création manuelle pour D&D 5e avec interface multi-étapes."""
+    from .dnd_data import DND_RACES, DND_CLASSES, DND_SKILLS, DND_BACKGROUNDS
+    from .character_utils import (
+        calculate_skills_for_character, 
+        get_racial_features, 
+        get_class_features, 
+        get_background_features,
+        get_starting_equipment,
+        apply_racial_bonuses
+    )
+    
     universe = get_object_or_404(Universe, pk=universe_id)
-    return render(request, 'characters/dnd_manual_creation.html', {
+    
+    if request.method == 'POST':
+        # Traitement de la soumission du formulaire
+        if 'save_character' in request.POST:
+            # Récupérer les données du formulaire
+            race_name = request.POST.get('race', '')
+            class_name = request.POST.get('character_class', '')
+            background_name = request.POST.get('background', '')
+            background_story = request.POST.get('background_story', '')
+            
+            # Trouver les clés correspondantes
+            race_key = None
+            class_key = None
+            background_key = None
+            
+            for key, data in DND_RACES.items():
+                if data['name'] == race_name:
+                    race_key = key
+                    break
+                    
+            for key, data in DND_CLASSES.items():
+                if data['name'] == class_name:
+                    class_key = key
+                    break
+                    
+            for key, data in DND_BACKGROUNDS.items():
+                if data['name'] == background_name:
+                    background_key = key
+                    break
+            
+            # Caractéristiques de base
+            base_abilities = {
+                'strength': int(request.POST.get('strength', 10)),
+                'dexterity': int(request.POST.get('dexterity', 10)),
+                'constitution': int(request.POST.get('constitution', 10)),
+                'intelligence': int(request.POST.get('intelligence', 10)),
+                'wisdom': int(request.POST.get('wisdom', 10)),
+                'charisma': int(request.POST.get('charisma', 10)),
+            }
+            
+            # Appliquer les bonus raciaux
+            final_abilities = apply_racial_bonuses(base_abilities.copy(), race_key)
+            
+            # Calculer compétences, traits et équipement
+            skills = calculate_skills_for_character(race_key, class_key, background_key, final_abilities)
+            
+            features = []
+            features.extend(get_racial_features(race_key))
+            features.extend(get_class_features(class_key))
+            features.extend(get_background_features(background_key))
+            
+            equipment = get_starting_equipment(class_name, background_name)
+            
+            # Langues (récupérées des données raciales)
+            languages = []
+            if race_key and race_key in DND_RACES:
+                languages = DND_RACES[race_key].get('languages', [])
+            
+            # Créer le personnage avec toutes les données
+            character_data = {
+                'name': request.POST.get('name', ''),
+                'race': race_name,
+                'char_class': class_name,
+                'level': 1,
+                'strength': final_abilities['strength'],
+                'dexterity': final_abilities['dexterity'],
+                'constitution': final_abilities['constitution'],
+                'intelligence': final_abilities['intelligence'],
+                'wisdom': final_abilities['wisdom'],
+                'charisma': final_abilities['charisma'],
+                'dnd_background': background_name,
+                'background_story': background_story,
+                'description': request.POST.get('description', ''),
+                'skills': skills,
+                'equipment': equipment,
+                'features': features,
+                'languages': languages,
+                'universe': universe
+            }
+            
+            character = Character.objects.create(**character_data)
+            return redirect('characters:character_detail', pk=character.pk)
+    
+    # Calculer les modificateurs pour affichage
+    def get_modifier(score):
+        return (score - 10) // 2
+    
+    context = {
         'universe': universe,
-        'method_name': 'Création Manuelle'
-    })
+        'method_name': 'Création Manuelle',
+        'races': DND_RACES,
+        'classes': DND_CLASSES,
+        'skills': DND_SKILLS,
+        'backgrounds': DND_BACKGROUNDS,
+        'get_modifier': get_modifier,
+    }
+    
+    return render(request, 'characters/dnd_manual_creation.html', context)
 
 
 def dnd_point_buy_system(request, universe_id):
