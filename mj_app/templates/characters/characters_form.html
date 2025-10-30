@@ -1,79 +1,680 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container">
-  <h2>{% if character %}Modifier{% else %}Créer{% endif %} un personnage</h2>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <h2 class="mb-4">
+        <i class="fas fa-{% if character %}edit{% else %}plus{% endif %} text-primary"></i>
+        {% if character %}Modifier{% else %}Créer{% endif %} un personnage
+      </h2>
+    </div>
+  </div>
 
-  <form method="POST" class="row g-3">
+  <form method="POST">
     {% csrf_token %}
     
-    <div class="col-md-6">
-      <label for="id_name" class="form-label">Nom :</label>
-      {{ form.name }}
+    <!-- Informations générales -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-user"></i> Informations générales</h5>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label for="id_name" class="form-label">Nom du personnage *</label>
+            {{ form.name }}
+          </div>
+          <div class="col-md-4">
+            <label for="id_universe" class="form-label">Univers *</label>
+            {{ form.universe }}
+          </div>
+          <div class="col-md-4">
+            <label for="id_level" class="form-label">Niveau</label>
+            {{ form.level }}
+          </div>
+          <div class="col-md-4">
+            <label for="id_race" class="form-label">Race</label>
+            {{ form.race }}
+          </div>
+          <div class="col-md-4">
+            <label for="id_char_class" class="form-label">Classe</label>
+            {{ form.char_class }}
+          </div>
+          <div class="col-md-4">
+            <label for="id_dnd_background" class="form-label">Historique D&D</label>
+            {{ form.dnd_background }}
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="col-md-6">
-      <label for="id_universe" class="form-label">Univers :</label>
-      {{ form.universe }}
+    <!-- Caractéristiques -->
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        <h5 class="mb-0"><i class="fas fa-dumbbell"></i> Caractéristiques</h5>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label for="id_strength" class="form-label">Force</label>
+            <div class="input-group">
+              {{ form.strength }}
+              <span class="input-group-text" id="strength-bonus">+0</span>
+            </div>
+            <small class="text-muted" id="strength-detail">Base: <span class="base-value">0</span>, Bonus racial: <span class="racial-bonus">+0</span></small>
+          </div>
+          <div class="col-md-4">
+            <label for="id_dexterity" class="form-label">Dextérité</label>
+            <div class="input-group">
+              {{ form.dexterity }}
+              <span class="input-group-text" id="dexterity-bonus">+0</span>
+            </div>
+            <small class="text-muted" id="dexterity-detail">Base: <span class="base-value">0</span>, Bonus racial: <span class="racial-bonus">+0</span></small>
+          </div>
+          <div class="col-md-4">
+            <label for="id_constitution" class="form-label">Constitution</label>
+            <div class="input-group">
+              {{ form.constitution }}
+              <span class="input-group-text" id="constitution-bonus">+0</span>
+            </div>
+            <small class="text-muted" id="constitution-detail">Base: <span class="base-value">0</span>, Bonus racial: <span class="racial-bonus">+0</span></small>
+          </div>
+          <div class="col-md-4">
+            <label for="id_intelligence" class="form-label">Intelligence</label>
+            <div class="input-group">
+              {{ form.intelligence }}
+              <span class="input-group-text" id="intelligence-bonus">+0</span>
+            </div>
+            <small class="text-muted" id="intelligence-detail">Base: <span class="base-value">0</span>, Bonus racial: <span class="racial-bonus">+0</span></small>
+          </div>
+          <div class="col-md-4">
+            <label for="id_wisdom" class="form-label">Sagesse</label>
+            <div class="input-group">
+              {{ form.wisdom }}
+              <span class="input-group-text" id="wisdom-bonus">+0</span>
+            </div>
+            <small class="text-muted" id="wisdom-detail">Base: <span class="base-value">0</span>, Bonus racial: <span class="racial-bonus">+0</span></small>
+          </div>
+          <div class="col-md-4">
+            <label for="id_charisma" class="form-label">Charisme</label>
+            <div class="input-group">
+              {{ form.charisma }}
+              <span class="input-group-text" id="charisma-bonus">+0</span>
+            </div>
+            <small class="text-muted" id="charisma-detail">Base: <span class="base-value">0</span>, Bonus racial: <span class="racial-bonus">+0</span></small>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="col-md-6">
-      <label for="id_race" class="form-label">Race :</label>
-      {{ form.race }}
+    <!-- Aperçu des bonus et traits -->
+    <div class="card mb-4" id="bonus-preview" style="display: none;">
+      <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0"><i class="fas fa-eye"></i> Aperçu des modifications</h5>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle"></i>
+          <strong>Note :</strong> Les modifications des caractéristiques, compétences (skills) et capacités (features) 
+          en fonction de la race, classe et historique D&D doivent être appliquées manuellement après la sauvegarde du personnage.
+          <br><br>
+          <strong>Astuce :</strong> Vous pouvez maintenant modifier directement les compétences, capacités et équipement 
+          dans les sections dédiées ci-dessous. Les informations D&D affichées ici servent de référence pour vous aider.
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <h6><i class="fas fa-plus-circle text-success"></i> Bonus raciaux</h6>
+            <div id="racial-bonuses">
+              <p class="text-muted">Sélectionnez une race pour voir les bonus</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h6><i class="fas fa-magic text-primary"></i> Traits et capacités</h6>
+            <div id="racial-traits">
+              <p class="text-muted">Sélectionnez une race pour voir les traits</p>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-md-6">
+            <h6><i class="fas fa-sword text-danger"></i> Capacités de classe</h6>
+            <div id="class-features">
+              <p class="text-muted">Sélectionnez une classe pour voir les capacités</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h6><i class="fas fa-scroll text-info"></i> Compétences d'historique</h6>
+            <div id="background-skills">
+              <p class="text-muted">Sélectionnez un historique pour voir les compétences</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="col-md-6">
-      <label for="id_char_class" class="form-label">Classe :</label>
-      {{ form.char_class }}
+    <!-- Compétences -->
+    <div class="card mb-4">
+      <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0"><i class="fas fa-cogs"></i> Compétences (Skills)</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12">
+            <label for="id_skills" class="form-label">
+              <i class="fas fa-tools"></i> Compétences du personnage
+            </label>
+            {{ form.skills }}
+            <small class="form-text text-muted">
+              <strong>Format attendu (une compétence par ligne) :</strong><br>
+              <code>Acrobaties (Dex): +5 (Maîtrise)</code><br>
+              <code>Athlétisme (For): +3 (Normal)</code><br>
+              <code>Discrétion (Dex): +8 (Expert)</code><br>
+              <em>Utilisez le nom complet de la compétence avec sa caractéristique associée.</em>
+            </small>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="col-12">
-      <h4>Caractéristiques</h4>
+    <!-- Capacités et traits -->
+    <div class="card mb-4">
+      <div class="card-header bg-danger text-white">
+        <h5 class="mb-0"><i class="fas fa-magic"></i> Capacités et traits</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12">
+            <label for="id_features" class="form-label">
+              <i class="fas fa-star"></i> Traits raciaux, capacités de classe, etc.
+            </label>
+            {{ form.features }}
+            <small class="form-text text-muted">
+              <strong>Format attendu (une capacité par ligne) :</strong><br>
+              <code>• Vision dans le noir (Elfe): Voir jusqu'à 18m dans l'obscurité</code><br>
+              <code>• Action défensive (Guerrier): +1 CA en combat</code><br>
+              <code>• Sorts de niveau 1: 3 emplacements par jour</code>
+            </small>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="col-md-4">
-      <label for="id_strength" class="form-label">Force :</label>
-      {{ form.strength }}
-    </div>
-    
-    <div class="col-md-4">
-      <label for="id_dexterity" class="form-label">Dextérité :</label>
-      {{ form.dexterity }}
-    </div>
-    
-    <div class="col-md-4">
-      <label for="id_constitution" class="form-label">Constitution :</label>
-      {{ form.constitution }}
-    </div>
-    
-    <div class="col-md-4">
-      <label for="id_intelligence" class="form-label">Intelligence :</label>
-      {{ form.intelligence }}
-    </div>
-    
-    <div class="col-md-4">
-      <label for="id_wisdom" class="form-label">Sagesse :</label>
-      {{ form.wisdom }}
-    </div>
-    
-    <div class="col-md-4">
-      <label for="id_charisma" class="form-label">Charisme :</label>
-      {{ form.charisma }}
-    </div>
-
-    <div class="col-12">
-      <label for="id_description" class="form-label">Description :</label>
-      {{ form.description }}
-    </div>
-
-    <div class="col-12">
-      <label for="id_background" class="form-label">Histoire :</label>
-      {{ form.background }}
+    <!-- Équipement -->
+    <div class="card mb-4">
+      <div class="card-header bg-dark text-white">
+        <h5 class="mb-0"><i class="fas fa-backpack"></i> Équipement</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <label for="id_equipment" class="form-label">
+              <i class="fas fa-sword"></i> Équipement du personnage
+            </label>
+            {{ form.equipment }}
+            <small class="form-text text-muted">
+              <strong>Format attendu (un objet par ligne) :</strong><br>
+              <code>• Épée longue +1</code><br>
+              <code>• Armure de cuir clouté</code><br>
+              <code>• 50 pièces d'or</code>
+            </small>
+          </div>
+          <div class="col-md-6">
+            <label for="id_languages" class="form-label">
+              <i class="fas fa-language"></i> Langues parlées
+            </label>
+            {{ form.languages }}
+            <small class="form-text text-muted">
+              <strong>Format attendu (une langue par ligne) :</strong><br>
+              <code>• Commun</code><br>
+              <code>• Elfique</code><br>
+              <code>• Draconique</code>
+            </small>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="col-12">
-      <button type="submit" class="btn btn-primary">Enregistrer le personnage</button>
-      <a href="{% url 'characters:character_list' %}" class="btn btn-secondary">Annuler</a>
+    <!-- Descriptions -->
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="fas fa-scroll"></i> Descriptions</h5>
+      </div>
+      <div class="card-body">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <label for="id_description" class="form-label">
+              <i class="fas fa-portrait"></i> Description physique
+            </label>
+            {{ form.description }}
+            <small class="form-text text-muted">
+              Décrivez l'apparence physique de votre personnage
+            </small>
+          </div>
+          <div class="col-md-6">
+            <label for="id_background_story" class="form-label">
+              <i class="fas fa-book"></i> Histoire personnelle
+            </label>
+            {{ form.background_story }}
+            <small class="form-text text-muted">
+              Racontez l'histoire, le passé et les motivations de votre personnage
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-end">
+          <a href="{% if character %}{% url 'characters:character_detail' character.pk %}{% else %}{% url 'characters:character_list' %}{% endif %}" 
+             class="btn btn-secondary me-2">
+            <i class="fas fa-arrow-left"></i> Retour
+          </a>
+          <a href="{% url 'characters:character_list' %}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-times"></i> Annuler
+          </a>
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-save"></i> {% if character %}Modifier{% else %}Créer{% endif %} le personnage
+          </button>
+        </div>
+      </div>
     </div>
   </form>
 </div>
+
+<style>
+.form-label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.card-header h5 {
+  font-weight: 600;
+}
+
+.form-control {
+  border-radius: 6px;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+  border-radius: 8px 8px 0 0;
+}
+
+.form-text.text-muted {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Uniformiser la hauteur des zones de texte */
+textarea[name="description"],
+textarea[name="background_story"] {
+  height: 150px !important;
+  resize: vertical;
+}
+
+/* Alignement des boutons */
+.btn {
+  min-height: 38px;
+}
+
+.btn-lg {
+  min-height: 48px;
+}
+
+@media (max-width: 768px) {
+  .container-fluid {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  
+  .btn-lg {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+/* Style pour les bonus */
+.input-group-text {
+  min-width: 50px;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.racial-bonus.positive {
+  color: #28a745;
+}
+
+.racial-bonus.negative {
+  color: #dc3545;
+}
+
+#bonus-preview {
+  transition: all 0.3s ease;
+}
+
+#bonus-preview.show {
+  display: block !important;
+}
+</style>
+
+<script>
+// Données D&D 5e intégrées directement dans le template
+const DND_DATA = {
+  races: {
+    'humain': {
+      'name': 'Humain',
+      'ability_bonuses': {'strength': 1, 'dexterity': 1, 'constitution': 1, 'intelligence': 1, 'wisdom': 1, 'charisma': 1},
+      'traits': ['Compétence supplémentaire', 'Don supplémentaire au niveau 1']
+    },
+    'elfe': {
+      'name': 'Elfe',
+      'ability_bonuses': {'dexterity': 2},
+      'traits': ['Vision dans le noir', 'Sens aiguisés', 'Ascendance féerique', 'Transe']
+    },
+    'nain': {
+      'name': 'Nain',
+      'ability_bonuses': {'constitution': 2},
+      'traits': ['Vision dans le noir', 'Résistance naine', 'Formation aux armes naines', 'Maîtrise des outils']
+    },
+    'halfelin': {
+      'name': 'Halfelin',
+      'ability_bonuses': {'dexterity': 2},
+      'traits': ['Chance', 'Brave', 'Agilité halfeline']
+    },
+    'drakéide': {
+      'name': 'Drakéide',
+      'ability_bonuses': {'strength': 2, 'charisma': 1},
+      'traits': ['Ascendance draconique', 'Souffle destructeur', 'Résistance aux dégâts']
+    },
+    'gnome': {
+      'name': 'Gnome',
+      'ability_bonuses': {'intelligence': 2},
+      'traits': ['Vision dans le noir', 'Ruse gnome']
+    },
+    'demi-elfe': {
+      'name': 'Demi-elfe',
+      'ability_bonuses': {'charisma': 2},
+      'traits': ['Vision dans le noir', 'Ascendance féerique', 'Polyvalence']
+    },
+    'demi-orc': {
+      'name': 'Demi-orc',
+      'ability_bonuses': {'strength': 2, 'constitution': 1},
+      'traits': ['Vision dans le noir', 'Endurance implacable', 'Attaques sauvages']
+    },
+    'tieffelin': {
+      'name': 'Tieffelin',
+      'ability_bonuses': {'intelligence': 1, 'charisma': 2},
+      'traits': ['Vision dans le noir', 'Résistance infernale', 'Héritage infernal']
+    }
+  },
+  classes: {
+    'barbare': {
+      'name': 'Barbare',
+      'features': ['Rage', 'Défense sans armure']
+    },
+    'barde': {
+      'name': 'Barde',
+      'features': ['Sorts', 'Inspiration bardique']
+    },
+    'clerc': {
+      'name': 'Clerc',
+      'features': ['Sorts', 'Domaine divin']
+    },
+    'druide': {
+      'name': 'Druide',
+      'features': ['Sorts', 'Druidique']
+    },
+    'ensorceleur': {
+      'name': 'Ensorceleur',
+      'features': ['Sorts', 'Origine magique']
+    },
+    'guerrier': {
+      'name': 'Guerrier',
+      'features': ['Second souffle', 'Style de combat']
+    },
+    'magicien': {
+      'name': 'Magicien',
+      'features': ['Sorts', 'Récupération arcanique']
+    },
+    'moine': {
+      'name': 'Moine',
+      'features': ['Arts martiaux', 'Ki']
+    },
+    'paladin': {
+      'name': 'Paladin',
+      'features': ['Détection du mal et du bien', 'Imposition des mains']
+    },
+    'rôdeur': {
+      'name': 'Rôdeur',
+      'features': ['Ennemi juré', 'Explorateur né']
+    },
+    'roublard': {
+      'name': 'Roublard',
+      'features': ['Expertise', 'Attaque sournoise']
+    },
+    'sorcier': {
+      'name': 'Sorcier',
+      'features': ['Patron', 'Magie de pacte']
+    }
+  },
+  backgrounds: {
+    'acolyte': {
+      'name': 'Acolyte',
+      'skills': ['Perspicacité', 'Religion']
+    },
+    'artisan_de_guilde': {
+      'name': 'Artisan de guilde',
+      'skills': ['Perspicacité', 'Persuasion']
+    },
+    'criminel': {
+      'name': 'Criminel',
+      'skills': ['Tromperie', 'Discrétion']
+    },
+    'erudit': {
+      'name': 'Érudit',
+      'skills': ['Arcanes', 'Histoire']
+    },
+    'héros_populaire': {
+      'name': 'Héros populaire',
+      'skills': ['Dressage', 'Survie']
+    },
+    'noble': {
+      'name': 'Noble',
+      'skills': ['Histoire', 'Persuasion']
+    },
+    'soldat': {
+      'name': 'Soldat',
+      'skills': ['Athlétisme', 'Intimidation']
+    }
+  }
+};
+
+// Variables pour stocker les valeurs de base
+let baseAbilities = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Stocker les valeurs de base au chargement
+  ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].forEach(ability => {
+    const field = document.getElementById('id_' + ability);
+    baseAbilities[ability] = parseInt(field.value) || 8;
+    updateAbilityDisplay(ability);
+  });
+
+  // Ajouter les gestionnaires d'événements
+  document.getElementById('id_race').addEventListener('change', updateRaceInfo);
+  document.getElementById('id_char_class').addEventListener('change', updateClassInfo);
+  document.getElementById('id_dnd_background').addEventListener('change', updateBackgroundInfo);
+  
+  // Gestionnaires pour les changements de caractéristiques
+  ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].forEach(ability => {
+    document.getElementById('id_' + ability).addEventListener('input', function() {
+      baseAbilities[ability] = parseInt(this.value) || 8;
+      updateAbilityDisplay(ability);
+    });
+  });
+  
+  // Initialiser l'affichage si des valeurs sont déjà sélectionnées
+  // Ceci permet de gérer le cas de modification d'un personnage existant
+  const currentRace = document.getElementById('id_race').value;
+  const currentClass = document.getElementById('id_char_class').value;
+  const currentBackground = document.getElementById('id_dnd_background').value;
+  
+  if (currentRace || currentClass || currentBackground) {
+    // Afficher le panneau d'aperçu si au moins une valeur est sélectionnée
+    document.getElementById('bonus-preview').style.display = 'block';
+  }
+  
+  updateRaceInfo();
+  updateClassInfo();
+  updateBackgroundInfo();
+});
+
+function updateRaceInfo() {
+  const raceKey = document.getElementById('id_race').value;
+  const preview = document.getElementById('bonus-preview');
+  
+  if (!raceKey) {
+    preview.style.display = 'none';
+    resetAbilityBonuses();
+    return;
+  }
+  
+  preview.style.display = 'block';
+  const race = DND_DATA.races[raceKey];
+  
+  if (race) {
+    // Afficher les bonus raciaux (utiliser ability_bonuses ou ability_bonus selon la structure)
+    const abilityBonuses = race.ability_bonuses || race.ability_bonus || {};
+    let bonusHtml = '<ul class="list-unstyled mb-0">';
+    Object.entries(abilityBonuses).forEach(([ability, bonus]) => {
+      const abilityName = getAbilityName(ability);
+      bonusHtml += `<li><i class="fas fa-arrow-up text-success"></i> ${abilityName}: +${bonus}</li>`;
+    });
+    bonusHtml += '</ul>';
+    document.getElementById('racial-bonuses').innerHTML = bonusHtml;
+    
+    // Afficher les traits raciaux
+    let traitsHtml = '<ul class="list-unstyled mb-0">';
+    const traits = race.traits || [];
+    traits.forEach(trait => {
+      traitsHtml += `<li><i class="fas fa-star text-warning"></i> ${trait}</li>`;
+    });
+    traitsHtml += '</ul>';
+    document.getElementById('racial-traits').innerHTML = traitsHtml;
+    
+    // Mettre à jour les caractéristiques
+    updateAllAbilities();
+  }
+}
+
+function updateClassInfo() {
+  const classKey = document.getElementById('id_char_class').value;
+  if (!classKey) {
+    document.getElementById('class-features').innerHTML = '<p class="text-muted">Sélectionnez une classe pour voir les capacités</p>';
+    return;
+  }
+  
+  const charClass = DND_DATA.classes[classKey];
+  if (charClass) {
+    let featuresHtml = '<ul class="list-unstyled mb-0">';
+    const features = charClass.features || [];
+    features.forEach(feature => {
+      featuresHtml += `<li><i class="fas fa-magic text-primary"></i> ${feature}</li>`;
+    });
+    featuresHtml += '</ul>';
+    document.getElementById('class-features').innerHTML = featuresHtml;
+  }
+}
+
+function updateBackgroundInfo() {
+  const backgroundKey = document.getElementById('id_dnd_background').value;
+  if (!backgroundKey) {
+    document.getElementById('background-skills').innerHTML = '<p class="text-muted">Sélectionnez un historique pour voir les compétences</p>';
+    return;
+  }
+  
+  const background = DND_DATA.backgrounds[backgroundKey];
+  if (background) {
+    let skillsHtml = '<ul class="list-unstyled mb-0">';
+    const skills = background.skills || [];
+    skills.forEach(skill => {
+      skillsHtml += `<li><i class="fas fa-check text-success"></i> ${skill}</li>`;
+    });
+    skillsHtml += '</ul>';
+    document.getElementById('background-skills').innerHTML = skillsHtml;
+  }
+}
+
+function updateAllAbilities() {
+  ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].forEach(updateAbilityDisplay);
+}
+
+function updateAbilityDisplay(ability) {
+  const raceKey = document.getElementById('id_race').value;
+  const baseValue = baseAbilities[ability] || 8;
+  let racialBonus = 0;
+  
+  if (raceKey && DND_DATA.races[raceKey]) {
+    const race = DND_DATA.races[raceKey];
+    const abilityBonuses = race.ability_bonuses || race.ability_bonus || {};
+    racialBonus = abilityBonuses[ability] || 0;
+  }
+  
+  const totalValue = baseValue + racialBonus;
+  const modifier = Math.floor((totalValue - 10) / 2);
+  const modifierText = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+  
+  // Mettre à jour l'affichage
+  document.getElementById(`${ability}-bonus`).textContent = modifierText;
+  
+  // Mettre à jour les détails
+  const detail = document.getElementById(`${ability}-detail`);
+  const baseSpan = detail.querySelector('.base-value');
+  const bonusSpan = detail.querySelector('.racial-bonus');
+  
+  baseSpan.textContent = baseValue;
+  bonusSpan.textContent = racialBonus >= 0 ? `+${racialBonus}` : `${racialBonus}`;
+  bonusSpan.className = `racial-bonus ${racialBonus > 0 ? 'positive' : racialBonus < 0 ? 'negative' : ''}`;
+}
+
+function resetAbilityBonuses() {
+  ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].forEach(ability => {
+    document.getElementById(`${ability}-bonus`).textContent = '+0';
+    const detail = document.getElementById(`${ability}-detail`);
+    detail.querySelector('.racial-bonus').textContent = '+0';
+    detail.querySelector('.racial-bonus').className = 'racial-bonus';
+  });
+  
+  document.getElementById('racial-bonuses').innerHTML = '<p class="text-muted">Sélectionnez une race pour voir les bonus</p>';
+  document.getElementById('racial-traits').innerHTML = '<p class="text-muted">Sélectionnez une race pour voir les traits</p>';
+}
+
+function getAbilityName(ability) {
+  const names = {
+    'strength': 'Force',
+    'dexterity': 'Dextérité', 
+    'constitution': 'Constitution',
+    'intelligence': 'Intelligence',
+    'wisdom': 'Sagesse',
+    'charisma': 'Charisme'
+  };
+  return names[ability] || ability;
+}
+</script>
 {% endblock %}

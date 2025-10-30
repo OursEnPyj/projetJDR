@@ -2,7 +2,7 @@
 {% block content %}
 <h2>Liste des personnages</h2>
 <div class="mb-3">
-  <a href="{% url 'characters:character_create' %}" class="btn btn-success">+ Créer manuellement</a>
+  <a href="{% url 'characters:dnd_manual_creation' 1 %}" class="btn btn-success">+ Créer manuellement</a>
   <a href="{% url 'characters:choose_universe_for_generation' %}" class="btn btn-primary">🎲 Générer un personnage</a>
 </div>
 <div class="row">

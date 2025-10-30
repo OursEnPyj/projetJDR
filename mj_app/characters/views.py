@@ -23,28 +23,44 @@ def character_detail(request, pk):
     return render(request, 'characters/character_detail.html', {'character': character})
 
 
-def character_create(request):
-    """Crée un nouveau personnage."""
-    if request.method == 'POST':
-        form = CharacterForm(request.POST)
-        if form.is_valid():
-            character = form.save()
-            return redirect('characters:character_detail', pk=character.pk)
-    else:
-        form = CharacterForm()
-    return render(request, 'characters/characters_form.html', {'form': form})
-
-
 def character_update(request, pk):
     """Modifie un personnage existant."""
     character = get_object_or_404(Character, pk=pk)
     if request.method == 'POST':
         form = CharacterForm(request.POST, instance=character)
         if form.is_valid():
-            form.save()
+            # Sauvegarder les données de base
+            character = form.save(commit=False)
+            
+            # Recalculer les compétences, traits et équipements basés sur la nouvelle race/classe/historique
+            if character.race and character.char_class and character.dnd_background:
+                from .character_utils import calculate_skills_for_character, get_racial_features
+                
+                # Préparer le dictionnaire des caractéristiques
+                abilities = {
+                    'strength': character.strength,
+                    'dexterity': character.dexterity,
+                    'constitution': character.constitution,
+                    'intelligence': character.intelligence,
+                    'wisdom': character.wisdom,
+                    'charisma': character.charisma
+                }
+                
+                # Calculer les nouvelles compétences
+                skills = calculate_skills_for_character(
+                    character.race, character.char_class, character.dnd_background, abilities
+                )
+                character.skills = skills
+                
+                # Mettre à jour les traits et équipements
+                features = get_racial_features(character.race)
+                character.features = features
+            
+            character.save()
             return redirect('characters:character_detail', pk=character.pk)
     else:
         form = CharacterForm(instance=character)
+    
     return render(request, 'characters/characters_form.html', {'form': form, 'character': character})
 
 
@@ -109,7 +125,8 @@ def dnd_random_generation(request, universe_id):
                 wisdom=int(request.POST.get("character_wisdom", 10)),
                 charisma=int(request.POST.get("character_charisma", 10)),
                 description=request.POST.get("character_description", ""),
-                background=request.POST.get("character_background", ""),
+                background_story=request.POST.get("character_background", ""),
+                dnd_background=request.POST.get("character_dnd_background", ""),
                 universe=universe,
             )
             return redirect('characters:character_detail', pk=character.pk)
@@ -234,19 +251,5 @@ def dnd_manual_creation(request, universe_id):
     return render(request, 'characters/dnd_manual_creation.html', context)
 
 
-def dnd_point_buy_system(request, universe_id):
-    """Système de points (27 points) pour D&D 5e."""
-    universe = get_object_or_404(Universe, pk=universe_id)
-    return render(request, 'characters/dnd_point_buy_system.html', {
-        'universe': universe,
-        'method_name': 'Système à 27 Points'
-    })
-
-
-def dnd_balanced_generation(request, universe_id):
-    """Génération équilibrée race/classe pour D&D 5e."""
-    universe = get_object_or_404(Universe, pk=universe_id)
-    return render(request, 'characters/dnd_balanced_generation.html', {
-        'universe': universe,
-        'method_name': 'Génération Équilibrée'
-    })
+    def get_modifier(score):
+        return (score - 10) // 2

@@ -69,44 +69,44 @@
                 <div class="card-header bg-success text-white">
                     <h4 class="mb-0"><i class="fas fa-dumbbell"></i> Caractéristiques</h4>
                 </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-6 mb-3">
+                <div class="card-body py-4">
+                    <div class="row g-3">
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-6">
                             <div class="ability-simple">
                                 <div class="ability-name">FORCE</div>
                                 <div class="ability-score">{{ character.strength }}</div>
                                 <div class="ability-mod">{{ character.strength|modifier_display }}</div>
                             </div>
                         </div>
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-6 mb-3">
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-6">
                             <div class="ability-simple">
                                 <div class="ability-name">DEXTÉRITÉ</div>
                                 <div class="ability-score">{{ character.dexterity }}</div>
                                 <div class="ability-mod">{{ character.dexterity|modifier_display }}</div>
                             </div>
                         </div>
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-6 mb-3">
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-6">
                             <div class="ability-simple">
                                 <div class="ability-name">CONSTITUTION</div>
                                 <div class="ability-score">{{ character.constitution }}</div>
                                 <div class="ability-mod">{{ character.constitution|modifier_display }}</div>
                             </div>
                         </div>
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-6 mb-3">
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-6">
                             <div class="ability-simple">
                                 <div class="ability-name">INTELLIGENCE</div>
                                 <div class="ability-score">{{ character.intelligence }}</div>
                                 <div class="ability-mod">{{ character.intelligence|modifier_display }}</div>
                             </div>
                         </div>
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-6 mb-3">
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-6">
                             <div class="ability-simple">
                                 <div class="ability-name">SAGESSE</div>
                                 <div class="ability-score">{{ character.wisdom }}</div>
                                 <div class="ability-mod">{{ character.wisdom|modifier_display }}</div>
                             </div>
                         </div>
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-6 mb-3">
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-6">
                             <div class="ability-simple">
                                 <div class="ability-name">CHARISME</div>
                                 <div class="ability-score">{{ character.charisma }}</div>
@@ -131,8 +131,10 @@
                         <div class="card-header bg-info text-white">
                             <h5 class="mb-0"><i class="fas fa-portrait"></i> Description physique</h5>
                         </div>
-                        <div class="card-body">
-                            <p class="mb-0">{{ character.description|linebreaks }}</p>
+                        <div class="card-body description-scroll">
+                            <div class="description-content">
+                                {{ character.description|linebreaks }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -144,8 +146,10 @@
                         <div class="card-header bg-secondary text-white">
                             <h5 class="mb-0"><i class="fas fa-book"></i> Histoire personnelle</h5>
                         </div>
-                        <div class="card-body">
-                            <p class="mb-0">{{ character.background_story|linebreaks }}</p>
+                        <div class="card-body description-scroll">
+                            <div class="description-content">
+                                {{ character.background_story|linebreaks }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -157,28 +161,32 @@
         <!-- Compétences sur plus de largeur -->
         {% if character.skills %}
         <div class="col-xl-6 col-lg-12 mb-4">
-            <div class="card">
+            <div class="card skills-card">
                 <div class="card-header bg-warning text-dark">
                     <h5 class="mb-0"><i class="fas fa-star"></i> Compétences</h5>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        {% for skill_key, skill_data in character.skills.items %}
-                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
-                            <div class="skill-simple d-flex justify-content-between align-items-center">
-                                <span class="skill-name {% if skill_data.proficient %}text-primary fw-bold{% endif %}" title="{{ skill_data.name }}">
-                                    {{ skill_data.name|truncatechars:15 }}
-                                </span>
-                                <span class="badge {% if skill_data.proficient %}bg-primary{% else %}bg-secondary{% endif %}">
-                                    {% if skill_data.bonus >= 0 %}+{% endif %}{{ skill_data.bonus }}
-                                </span>
+                <div class="card-body skills-scroll">
+                    <div class="skills-content">
+                        <div class="row g-2">
+                            {% for skill_key, skill_data in character.skills.items %}
+                            <div class="col-lg-6 col-md-12 mb-2">
+                                <div class="skill-simple d-flex justify-content-between align-items-center">
+                                    <span class="skill-name {% if skill_data.proficient %}text-primary fw-bold{% endif %}" title="{{ skill_data.name }}">
+                                        {{ skill_data.name }}
+                                    </span>
+                                    <span class="badge {% if skill_data.proficient %}bg-primary{% else %}bg-secondary{% endif %} ms-2">
+                                        {% if skill_data.bonus >= 0 %}+{% endif %}{{ skill_data.bonus }}
+                                    </span>
+                                </div>
                             </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
+                        <div class="mt-3 pt-2 border-top">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle"></i> En bleu : compétences maîtrisées
+                            </small>
+                        </div>
                     </div>
-                    <small class="text-muted mt-2 d-block">
-                        <i class="fas fa-info-circle"></i> En bleu : compétences maîtrisées
-                    </small>
                 </div>
             </div>
         </div>
@@ -187,23 +195,27 @@
         <!-- Traits et capacités -->
         {% if character.features %}
         <div class="col-xl-6 col-lg-12 mb-4">
-            <div class="card">
+            <div class="card features-card">
                 <div class="card-header bg-danger text-white">
                     <h5 class="mb-0"><i class="fas fa-magic"></i> Traits et capacités</h5>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        {% for feature in character.features %}
-                        <div class="col-lg-6 mb-3">
-                            <div class="feature-simple">
-                                <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <strong class="feature-name">{{ feature.name }}</strong>
-                                    <span class="badge bg-outline-secondary small">{{ feature.type }}</span>
+                <div class="card-body features-scroll">
+                    <div class="features-content">
+                        <div class="row g-3">
+                            {% for feature in character.features %}
+                            <div class="col-12">
+                                <div class="feature-simple">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="feature-name mb-0">{{ feature.name }}</h6>
+                                        <span class="badge bg-secondary small">{{ feature.type }}</span>
+                                    </div>
+                                    <div class="feature-description">
+                                        {{ feature.description }}
+                                    </div>
                                 </div>
-                                <small class="text-muted">{{ feature.description }}</small>
                             </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -267,63 +279,119 @@
 /* Caractéristiques simples et lisibles */
 .ability-simple {
     text-align: center;
-    padding: 15px;
+    padding: 20px 15px;
     background: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 8px;
-    height: 100%;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.ability-simple:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .ability-name {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
     color: #6c757d;
     text-transform: uppercase;
     margin-bottom: 8px;
     letter-spacing: 0.5px;
+    line-height: 1.2;
 }
 
 .ability-score {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: bold;
     color: #007bff;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    line-height: 1;
 }
 
 .ability-mod {
     font-size: 14px;
     background: #6c757d;
     color: white;
-    padding: 2px 8px;
-    border-radius: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
     display: inline-block;
-    min-width: 35px;
+    min-width: 45px;
+    font-weight: 500;
 }
 
 /* Compétences simplifiées */
 .skill-simple {
-    padding: 8px;
+    padding: 10px 12px;
     background: #f8f9fa;
-    border-radius: 4px;
-    margin-bottom: 5px;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .skill-name {
-    font-size: 13px;
+    font-size: 14px;
+    margin: 0;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 10px;
+}
+
+.skill-simple .badge {
+    font-size: 12px;
+    padding: 4px 8px;
+    min-width: 35px;
+    text-align: center;
+    flex-shrink: 0;
 }
 
 /* Traits simplifiés */
 .feature-simple {
-    padding: 10px;
+    padding: 16px;
     background: #f8f9fa;
-    border-left: 3px solid #dc3545;
-    border-radius: 0 4px 4px 0;
-    margin-bottom: 8px;
+    border: 1px solid #e9ecef;
+    border-left: 4px solid #dc3545;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+}
+
+.feature-simple:hover {
+    background: #fff;
+    border-left-color: #c82333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .feature-name {
     color: #dc3545;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.feature-description {
+    color: #495057;
     font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.feature-simple .badge {
+    font-size: 11px;
+    padding: 4px 8px;
+    font-weight: 500;
 }
 
 /* Équipement simplifié */
@@ -372,6 +440,120 @@
 /* Hauteur minimum pour les cards */
 .h-100 {
     min-height: 200px;
+}
+
+/* Descriptions avec scroll */
+.description-scroll {
+    padding: 0 !important;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.description-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #495057;
+}
+
+.description-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.description-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.description-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.description-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Style pour le texte des descriptions */
+.description-content p {
+    margin-bottom: 1rem;
+}
+
+.description-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Traits et capacités avec scroll pour uniformiser avec les compétences */
+.features-scroll {
+    padding: 0 !important;
+    height: 450px;
+    display: flex;
+    flex-direction: column;
+}
+
+.features-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+}
+
+.features-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.features-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.features-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.features-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Hauteur spécifique pour uniformiser les compétences et traits */
+.skills-card .card-body,
+.features-card .card-body {
+    height: 450px;
+}
+
+/* Compétences avec scroll */
+.skills-scroll {
+    padding: 0 !important;
+    height: 450px;
+    display: flex;
+    flex-direction: column;
+}
+
+.skills-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+}
+
+.skills-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.skills-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.skills-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.skills-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 </style>
 {% endblock %}
